@@ -28,31 +28,24 @@
 |               |title          |VARCHAR(255)   |                               |
 |               |content        |VARCHAR(2047)  |                               |
 |               |url_avatar     |VARCHAR(255)   |                               |
-|               |ts_create      |DATETIME       |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
 |               |               |               |                               |
 |comments       |id             |INTEGER        |PRIMARY KEY                    |
 |               |id_user        |INTEGER        |                               |
 |               |id_post        |INTEGER        |                               |
 |               |content        |VARCHAR(2047)  |                               |
-|               |ts_create      |DATETIME       |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
 |               |               |               |                               |
 |chatrooms      |id             |INTEGER        |PRIMARY KEY                    |
 |               |id_user        |INTEGER        |                               |
 |               |id_user_target |INTEGER        |                               |
 |               |name           |VARCHAR(255)   |                               |
 |               |url_avatar     |VARCHAR(255)   |                               |
-|               |ts_create      |DATETIME       |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
 |               |               |               |                               |
 |messages       |id             |INTEGER        |PRIMARY KEY                    |
 |               |id_chatroom    |INTEGER        |                               |
 |               |status         |INTEGER        |NEW=0 READ=1 OUT=2             |
 |               |content        |VARCHAR(255)   |                               |
-
-
-
-
-
-
-
-
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
 
