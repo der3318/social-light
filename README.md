@@ -10,6 +10,8 @@
 |Table          |Field          |Type           |Note                           |
 |:-:            |:-:            |:-:            |:-:                            |
 |users          |id             |INTEGER        |PRIMARY KEY                    |
+|               |account        |VARCHAR(255)   |                               |
+|               |password       |VARCHAR(255)   |                               |
 |               |name           |VARCHAR(255)   |                               |
 |               |type           |VARCHAR(255)   |                               |
 |               |location       |VARCHAR(255)   |                               |
