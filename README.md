@@ -376,7 +376,7 @@ None
 |messages|Object Array|code 為零時存在，最新的一百筆，元素結構參考下幾列|
 |messages[index].status|Integer|訊息狀態，「0」為新，「1」為舊，「2」為已發送|
 |messages[index].content|String|訊息內容|
-|messages[index].ts_create|String|訊息時間，格式為「YYYY-MM-DD HH:MM」|
+|messages[index].ts_create|Datetime String|訊息時間，格式為「YYYY-MM-DD HH:MM」|
 
 範例－`{"code":0, "id_chatroom":69, "name":"漂亮的護士", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"一次多少", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"一萬可以嗎", "ts_create":"2020-03-01 22:20"}]}`
 
@@ -408,7 +408,7 @@ None
 |messages|Object Array|code 為零時存在，最新的一百筆，元素結構參考下幾列|
 |messages[index].status|Integer|訊息狀態，「0」為新，「1」為舊，「2」為已發送|
 |messages[index].content|String|訊息內容|
-|messages[index].ts_create|String|訊息時間，格式為「YYYY-MM-DD HH:MM」|
+|messages[index].ts_create|Datetime String|訊息時間，格式為「YYYY-MM-DD HH:MM」|
 
 範例－`{"code":0, "id_chatroom":69, "name":"漂亮的護士", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"一次多少", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"一萬可以嗎", "ts_create":"2020-03-01 22:20"}, {"status":2, "content":"現金沒那麼多", "ts_create":"2020-03-01 22:25"}]}`
 
