@@ -62,7 +62,7 @@
 #### 0 - About
 |URL 前綴|版本|最後修改日期|
 |:-:|:-:|:-:|
-|[DOMAIN]/api/v1|Version 1|2020 Febuary 26th|
+|[DOMAIN]/api/v1|Version 1|2020 Febuary 24th|
 
 
 #### 1 - Login
@@ -221,7 +221,6 @@ None
 |content|String|文章內容|v|
 |url_avatar|String|文章縮圖網址|v|
 
-
 範例－`{"token":"mqspoq5fc", "id_user":202, "id_board":5, "title":"旁邊的病人好正", "content":"有卦嗎", "url_avatar":"https://beauty.png"}`
 
 
@@ -230,7 +229,6 @@ None
 |:-:|:-:|:-:|
 |code|Integer|狀態識別碼，「0」為發文或更新成功，「-1」為查無使用者，「-2」為看版不存在，「-3」為資訊有缺漏或空白，「-4」則是使用者權限不合法|
 |id|Integer|code 為零時存在，表示新文章的 ID|
-
 
 範例－`{"code":-3}` 或是 `{"code":0, "id":9}`
 
@@ -246,7 +244,6 @@ None
 |:-:|:-:|:-:|:-:|
 |id|Integer|欲瀏覽的文章 ID|v|
 
-
 範例－`{"id": 4}`
 
 
@@ -261,10 +258,157 @@ None
 |url_avatar|String|code 為零時存在，即文章縮圖網址|
 |ts_create|Datetime String|code 為零時存在，文章發表日期，格式為「YYYY-MM-DD HH:MM」|
 |comments|Object Array|code 為零時存在，元素結構參考下幾列|
+|comments[i].id|Integer|留言 ID，修改或編輯時使用|
 |comments[i].id_user|Integer|該留言使用者的 ID|
 |comments[i].content|String|該留言的內文|
 |comments[i].ts_create|Datetime String|該留言的發表日期，格式為「YYYY-MM-DD HH:MM」|
 
+範例－`{"code":0, "id_user":202, "id_board":5, "title":"沒錢付手術費", "content":"唉", "url_avatar":"https://post.png", "ts_create":"2020-02-26 21:00", "comments":[{"id":1034, "id_user":204, "content":"我也是", "ts_create":"2020-02-26 21:05"}]}`
 
-範例－`{"code":0, "id_user":202, "id_board":5, "title":"沒錢付手術費", "content":"唉", "url_avatar":"https://post.png", "ts_create":"2020-02-26 21:00", "comments":[{"id_user":204, "content":"我也是", "ts_create":"2020-02-26 21:05"}]}`
+
+#### 8 - Publish or Update a Comment
+
+|Path|Protocol|Request Content Type|Response Content Type|Charset|
+|:-:|:-:|:-:|:-:|:-:|
+|[SUFFIX]/comment|HTTP POST|Application/JSON|Application/JSON|UTF-8|
+
+##### Request Body
+|Key|Type|Description|Required|
+|:-:|:-:|:-:|:-:|
+|id|Integer|留言 ID，若有，且留言存在，則會更新該文章||
+|token|String|權限識別碼，用於識別使用者的身分|v|
+|id_user|Integer|欲留言者（即是自己）的使用者 ID|v|
+|id_post|Integer|欲留言回覆的文章 ID|v|
+|content|String|留言內容|v|
+
+範例－`{"token":"mqspoq5fk", "id_user":202, "id_post":4, "content":"好想當醫生賺大錢"}`
+
+
+##### Returned Content
+|Key|Type|Description|
+|:-:|:-:|:-:|
+|code|Integer|狀態識別碼，「0」為回覆成功，「-1」為查無使用者，「-2」為文章不存在，「-3」為資訊有缺漏或空白，「-4」則是使用者權限不合法|
+|id|Integer|code 為零時存在，表示新文章的 ID|
+
+範例－`{"code":-4}` 或是 `{"code":0, "id":1039}`
+
+
+#### 9 - Get Chatrooms of a User
+
+|Path|Protocol|Request Content Type|Response Content Type|Charset|
+|:-:|:-:|:-:|:-:|:-:|
+|[SUFFIX]/chatrooms|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+
+##### Request Body
+|Key|Type|Description|Required|
+|:-:|:-:|:-:|:-:|
+|token|String|權限識別碼，用於識別使用者的身分|v|
+|id|Integer|使用者 ID|v|
+
+範例－`{"token":"mqspoq5fc", "id":202}`
+
+
+##### Returned Content
+|Key|Type|Description|
+|:-:|:-:|:-:|
+|code|Integer|狀態識別碼，「0」為查詢成功，「-1」為查無使用者，「-2」是使用者權限不合法|
+|chatrooms|Object Array|code 為零時存在，元素結構參考下幾列|
+|chatrooms[index].id|Integer|聊天室 ID，用於瀏覽對話記錄或發訊|
+|chatrooms[index].id_user_target|Integer|聊天室對象的使用者 ID|
+|chatrooms[index].name|String|聊天室名稱，預設是對象名字|
+|chatrooms[index].url_avatar|String|聊天室頭像網址|
+|chatrooms[index].lastmsg_status|Integer|最後一則訊息的狀態，「0」為新，「1」為舊，「2」為已發送|
+|chatrooms[index].lastmsg_content|String|最後一則訊息的內容|
+|chatrooms[index].lastmsg_ts|Datetime String|最後一則訊息的時間，格式為「YYYY-MM-DD HH:MM」|
+
+範例－`{"code":0, "chatrooms":[{"id":67, "id_user_target":205, "name":"李承軒", "url_avatar":"http://handsome.jpg", "lastmsg_status":0, "lastmsg_content":"晚安", ,"lastmsg_ts":"2020-02-28 23:55"}]}`
+
+
+#### 10 - Update a Chatroom
+
+|Path|Protocol|Request Content Type|Response Content Type|Charset|
+|:-:|:-:|:-:|:-:|:-:|
+|[SUFFIX]/chatroom|HTTP POST|Application/JSON|Application/JSON|UTF-8|
+
+##### Request Body
+|Key|Type|Description|Required|
+|:-:|:-:|:-:|:-:|
+|id|Integer|聊天室 ID|v|
+|token|String|權限識別碼，用於識別使用者的身分|v|
+|id_user|Integer|欲編輯聊天室（即是自己）的使用者 ID|v|
+|name|String|若有，則更新聊天室的名字||
+|url_avatar|String|若有，則更新聊天室的縮圖網址||
+
+範例－`{"id":68, "token":"mqspoq5fc", "id_user":202, "name":"有錢承軒"}`
+
+
+##### Returned Content
+|Key|Type|Description|
+|:-:|:-:|:-:|
+|code|Integer|狀態識別碼，「0」為更新成功，「-1」為聊天室不存在，「-2」為查無使用者，「-3」則是使用者權限不合法|
+
+範例－`{"code":-1}`
+
+
+#### 11 - Get Messages Between Users
+
+|Path|Protocol|Request Content Type|Response Content Type|Charset|
+|:-:|:-:|:-:|:-:|:-:|
+|[SUFFIX]/messages|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+
+##### Request Body
+|Key|Type|Description|Required|
+|:-:|:-:|:-:|:-:|
+|token|String|權限識別碼，用於識別使用者的身分|v|
+|id|Integer|使用者 ID|v|
+|id_user_target|Integer|聊天對象的使用者 ID|v|
+
+範例－`{"token":"mqspoq5fc", "id":202, "id_user_target":206}`
+
+
+##### Returned Content
+|Key|Type|Description|
+|:-:|:-:|:-:|
+|code|Integer|狀態識別碼，「0」為查詢成功，「-1」為查無使用者，「-2」為查無聊天室，「-3」為權限不合法|
+|id_chatroom|Integer|code 為零時存在，代表兩人之間的聊天室 ID|
+|name|String|code 為零時存在，代表兩人之間的聊天室名稱|
+|url_avatar|String|code 為零時存在，代表兩人之間的聊天室縮圖網址|
+|messages|Object Array|code 為零時存在，最新的一百筆，元素結構參考下幾列|
+|messages[index].status|Integer|訊息狀態，「0」為新，「1」為舊，「2」為已發送|
+|messages[index].content|String|訊息內容|
+|messages[index].ts_create|String|訊息時間，格式為「YYYY-MM-DD HH:MM」|
+
+範例－`{"code":0, "id_chatroom":69, "name":"漂亮的護士", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"一次多少", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"一萬可以嗎", "ts_create":"2020-03-01 22:20"}]}`
+
+
+#### 12 - Send Message
+
+|Path|Protocol|Request Content Type|Response Content Type|Charset|
+|:-:|:-:|:-:|:-:|:-:|
+|[SUFFIX]/message|HTTP POST|Application/JSON|Application/JSON|UTF-8|
+
+##### Request Body
+|Key|Type|Description|Required|
+|:-:|:-:|:-:|:-:|
+|token|String|權限識別碼，用於識別使用者的身分|v|
+|id|Integer|使用者 ID|v|
+|id_user_target|Integer|聊天對象的使用者 ID|v|
+|content|String|訊息內容|v|
+
+範例－`{"token":"mqspoq5fc", "id":202, "id_user_target":206, "content":"現金沒那麼多"}`
+
+
+##### Returned Content
+|Key|Type|Description|
+|:-:|:-:|:-:|
+|code|Integer|狀態識別碼，「0」為發送成功，「-1」為查無使用者，「-2」為權限不合法|
+|id_chatroom|Integer|code 為零時存在，代表兩人之間的聊天室 ID|
+|name|String|code 為零時存在，代表兩人之間的聊天室名稱|
+|url_avatar|String|code 為零時存在，代表兩人之間的聊天室縮圖網址|
+|messages|Object Array|code 為零時存在，最新的一百筆，元素結構參考下幾列|
+|messages[index].status|Integer|訊息狀態，「0」為新，「1」為舊，「2」為已發送|
+|messages[index].content|String|訊息內容|
+|messages[index].ts_create|String|訊息時間，格式為「YYYY-MM-DD HH:MM」|
+
+範例－`{"code":0, "id_chatroom":69, "name":"漂亮的護士", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"一次多少", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"一萬可以嗎", "ts_create":"2020-03-01 22:20"}, {"status":2, "content":"現金沒那麼多", "ts_create":"2020-03-01 22:25"}]}`
 
