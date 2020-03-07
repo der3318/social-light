@@ -7,7 +7,7 @@ CREATE TABLE "users" (
 	"location"			VARCHAR(255),
 	"motto"				VARCHAR(255),
 	"intro"				VARCHAR(2047),
-	"url_avatar"		VARCHAR(255),
+	"url_avatar"			VARCHAR(255),
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -23,7 +23,7 @@ CREATE TABLE "posts" (
 	"id_board"			INTEGER,
 	"title"				VARCHAR(255),
 	"content"			VARCHAR(2047),
-	"url_avatar"		VARCHAR(255),
+	"url_avatar"			VARCHAR(255),
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -38,15 +38,15 @@ CREATE TABLE "comments" (
 CREATE TABLE "chatrooms" (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_user"			INTEGER,
-	"id_user_target"	INTEGER,
+	"id_user_target"		INTEGER,
 	"name"				VARCHAR(255),
-	"url_avatar"		VARCHAR(255),
+	"url_avatar"			VARCHAR(255),
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE "messages" (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
-	"id_chatroom"		INTEGER,
+	"id_chatroom"			INTEGER,
 	"status"			INTEGER,
 	"content"			VARCHAR(255),
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
