@@ -69,7 +69,7 @@
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/login|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/login|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -94,7 +94,7 @@
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/user|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/user|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -123,7 +123,7 @@
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/user|HTTP POST|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/user/update|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -153,7 +153,7 @@
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/boards|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/boards|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 None
@@ -174,7 +174,7 @@ None
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/posts|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/posts|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -208,7 +208,7 @@ None
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/post|HTTP POST|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/post/update|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -237,7 +237,7 @@ None
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/post|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/post|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -270,7 +270,7 @@ None
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/comment|HTTP POST|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/comment/update|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -297,7 +297,7 @@ None
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/chatrooms|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/chatrooms|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -328,7 +328,7 @@ None
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/chatroom|HTTP POST|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/chatroom/update|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -354,7 +354,7 @@ None
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/messages|HTTP GET|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/messages|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
@@ -385,7 +385,7 @@ None
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
-|[SUFFIX]/message|HTTP POST|Application/JSON|Application/JSON|UTF-8|
+|[SUFFIX]/message/update|HTTP POST|Application/JSON|Application/JSON|UTF-8|
 
 ##### Request Body
 |Key|Type|Description|Required|
