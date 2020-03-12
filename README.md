@@ -1,3 +1,63 @@
+## Happy Patient
+### Server Configuration
+|域名|IPv4 位址|虛擬核心數目|記憶體大小|實體位置|
+|:-:|:-:|:-:|:-:|:-:|
+|azure.der3318.nctu.me|23.102.71.144|2|16 GB|Japan East|
+
+
+### Database
+#### Sqlite
+* 單個檔案
+* 搬遷、編輯容易，適合測試階段及小型專案
+* 圖形介面下載 [官方連結](https://sqlitebrowser.org/dl/)
+
+
+#### Tables
+|Table          |Field          |Type           |Note                           |
+|:-:            |:-:            |:-:            |:-:                            |
+|users          |id             |INTEGER        |PRIMARY KEY                    |
+|               |account        |VARCHAR(255)   |                               |
+|               |password       |VARCHAR(255)   |                               |
+|               |name           |VARCHAR(255)   |                               |
+|               |type           |VARCHAR(255)   |                               |
+|               |location       |VARCHAR(255)   |                               |
+|               |motto          |VARCHAR(255)   |                               |
+|               |intro          |VARCHAR(2047)  |                               |
+|               |url_avatar     |VARCHAR(255)   |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
+|               |               |               |                               |
+|boards         |id             |INTEGER        |PRIMARY KEY                    |
+|               |name           |VARCHAR(255)   |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
+|               |               |               |                               |
+|posts          |id             |INTEGER        |PRIMARY KEY                    |
+|               |id_user        |INTEGER        |                               |
+|               |id_board       |INTEGER        |                               |
+|               |title          |VARCHAR(255)   |                               |
+|               |content        |VARCHAR(2047)  |                               |
+|               |url_avatar     |VARCHAR(255)   |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
+|               |               |               |                               |
+|comments       |id             |INTEGER        |PRIMARY KEY                    |
+|               |id_user        |INTEGER        |                               |
+|               |id_post        |INTEGER        |                               |
+|               |content        |VARCHAR(2047)  |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
+|               |               |               |                               |
+|chatrooms      |id             |INTEGER        |PRIMARY KEY                    |
+|               |id_user        |INTEGER        |                               |
+|               |id_user_target |INTEGER        |                               |
+|               |name           |VARCHAR(255)   |                               |
+|               |url_avatar     |VARCHAR(255)   |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
+|               |               |               |                               |
+|messages       |id             |INTEGER        |PRIMARY KEY                    |
+|               |id_chatroom    |INTEGER        |                               |
+|               |status         |INTEGER        |NEW=0 READ=1 OUT=2             |
+|               |content        |VARCHAR(255)   |                               |
+|               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
+
+
 ### API
 #### 0 - About
 |URL 前綴|版本|最後修改日期|
