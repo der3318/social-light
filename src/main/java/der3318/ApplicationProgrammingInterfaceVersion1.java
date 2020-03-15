@@ -209,7 +209,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                 }
                 return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
             });
-            if(newRecord.isPresent()) {
+            if (newRecord.isPresent()) {
                 return rsp.set("id", newRecord.get()).body();
             }
             return rsp.set("id", id).body();
@@ -279,11 +279,208 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                 }
                 return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
             });
-            if(newRecord.isPresent()) {
+            if (newRecord.isPresent()) {
                 return rsp.set("id", newRecord.get()).body();
             }
             return rsp.set("id", id).body();
         });
+
+        /* [api] get chatrooms of a user */
+        post("/chatrooms", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            String token = (String) req.getOrDefault("token", "");
+            Optional<Map<String, Object>> userRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name FROM users WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            if (!userRecord.isPresent()) {
+                return rsp.set("code", -1).body();
+            }
+            if (!tokens.containsKey(id) || !tokens.get(id).equals(token)) {
+                return rsp.set("code", -2).body();
+            }
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                StringBuilder sql = new StringBuilder()
+                        .append("SELECT chatrooms.id AS id, id_user_target, name, url_avatar, MAX(messages.ts_create) AS lastmsg_ts ")
+                        .append("FROM chatrooms LEFT JOIN messages ON chatrooms.id = messages.id_chatroom ")
+                        .append("GROUP BY chatrooms.id, id_user_target, name, url_avatar HAVING id_user = :id ORDER BY lastmsg_ts DESC");
+                return h.createQuery(sql.toString()).bind("id", id).mapToMap().list();
+            });
+            for (Map<String, Object> r : records) {
+                Optional<Map<String, Object>> msgRecord = jdbi.withHandle(h -> {
+                    StringBuilder sql = new StringBuilder()
+                            .append("SELECT status AS lastmsg_status, content AS lastmsg_content ")
+                            .append("FROM messages WHERE id_chatroom = :id AND ts_create = :lastmsg_ts LIMIT 1");
+                    return h.createQuery(sql.toString()).bindMap(r).mapToMap().findFirst();
+                });
+                r.putAll(msgRecord.get());
+                finalizeDatetime(timePattern, r, "lastmsg_ts");
+            }
+            return rsp.set("chatrooms", records).body();
+        });
+
+        /* [api] update a chatroom */
+        post("/chatroom/update", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Integer userID = (Integer) req.getOrDefault("id_user", Integer.MIN_VALUE);
+            String token = (String) req.getOrDefault("token", "");
+            Optional<Map<String, Object>> chatroomRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name, url_avatar FROM chatrooms WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            if (!chatroomRecord.isPresent()) {
+                return rsp.set("code", -1).body();
+            }
+            Optional<Map<String, Object>> userRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name FROM users WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", userID).mapToMap().findFirst();
+            });
+            if (!userRecord.isPresent()) {
+                return rsp.set("code", -2).body();
+            }
+            if (!tokens.containsKey(userID) || !tokens.get(userID).equals(token)) {
+                return rsp.set("code", -3).body();
+            }
+            Map<String, Object> chatroom = chatroomRecord.get();
+            chatroom.putAll(req);
+            jdbi.useHandle(h -> {
+                String sql = "UPDATE chatrooms SET name = :name, url_avatar = :url_avatar WHERE id = :id";
+                h.createUpdate(sql).bindMap(chatroom).execute();
+            });
+            return rsp.body();
+        });
+
+        /* [api] get message between users */
+        post("/messages", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Integer targetID = (Integer) req.getOrDefault("id_user_target", Integer.MIN_VALUE);
+            String token = (String) req.getOrDefault("token", "");
+            Optional<Map<String, Object>> userRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name FROM users WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            if (!userRecord.isPresent()) {
+                return rsp.set("code", -1).body();
+            }
+            Optional<Map<String, Object>> chatroomRecord = jdbi.withHandle(h -> {
+                StringBuilder sql = new StringBuilder()
+                        .append("SELECT id AS id_chatroom, name, url_avatar ")
+                        .append("FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1");
+                return h.createQuery(sql.toString()).bind("id_user", id).bind("id_user_target", targetID).mapToMap().findFirst();
+            });
+            if (!chatroomRecord.isPresent()) {
+                return rsp.set("code", -2).body();
+            }
+            if (!tokens.containsKey(id) || !tokens.get(id).equals(token)) {
+                return rsp.set("code", -3).body();
+            }
+            Map<String, Object> chatroom = chatroomRecord.get();
+            rsp.set(chatroom);
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                String sql = "SELECT status, content, ts_create FROM messages WHERE id_chatroom = :id_chatroom ORDER BY ts_create DESC LIMIT 100";
+                return h.createQuery(sql).bind("id_chatroom", chatroom.get("id_chatroom")).mapToMap().list();
+            });
+            for (Map<String, Object> r : records) {
+                finalizeDatetime(timePattern, r, "ts_create");
+            }
+            return rsp.set("messages", records).body();
+        });
+
+        /* [api] send message */
+        post("/message/update", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Integer targetID = (Integer) req.getOrDefault("id_user_target", Integer.MIN_VALUE);
+            String content = (String) req.getOrDefault("content", "");
+            String token = (String) req.getOrDefault("token", "");
+            Optional<Map<String, Object>> userRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name, url_avatar FROM users WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            if (!userRecord.isPresent()) {
+                return rsp.set("code", -1).body();
+            }
+            Optional<Map<String, Object>> userTargetRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name, url_avatar FROM users WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", targetID).mapToMap().findFirst();
+            });
+            if (!userTargetRecord.isPresent()) {
+                return rsp.set("code", -1).body();
+            }
+            Map<String, Object> user = userRecord.get(), userTarget = userTargetRecord.get();
+            if (!tokens.containsKey(id) || !tokens.get(id).equals(token)) {
+                return rsp.set("code", -2).body();
+            }
+            Integer chatroomID = -1, chatroomTargetID = -1;
+            synchronized (this) {
+                Optional<Map<String, Object>> chatroomRecord = jdbi.withHandle(h -> {
+                    StringBuilder sql = new StringBuilder()
+                            .append("SELECT id AS id_chatroom, name, url_avatar ")
+                            .append("FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1");
+                    return h.createQuery(sql.toString()).bind("id_user", id).bind("id_user_target", targetID).mapToMap().findFirst();
+                });
+                Optional<Map<String, Object>> chatroomTargetRecord = jdbi.withHandle(h -> {
+                    StringBuilder sql = new StringBuilder()
+                            .append("SELECT id AS id_chatroom, name, url_avatar ")
+                            .append("FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1");
+                    return h.createQuery(sql.toString()).bind("id_user", targetID).bind("id_user_target", id).mapToMap().findFirst();
+                });
+                if (chatroomRecord.isPresent() && chatroomTargetRecord.isPresent()) {
+                    chatroomID = (Integer) chatroomRecord.get().get("id_chatroom");
+                    chatroomTargetID = (Integer) chatroomTargetRecord.get().get("id_chatroom");
+                } else {
+                    chatroomID = jdbi.withHandle(h -> {
+                        StringBuilder sql = new StringBuilder()
+                                .append("INSERT INTO chatrooms (id_user, id_user_target, name, url_avatar) ")
+                                .append("VALUES (:id_user, :id_user_target, :name, :url_avatar)");
+                        return h.createUpdate(sql.toString())
+                                .bind("id_user", id)
+                                .bind("id_user_target", targetID)
+                                .bind("name", userTarget.get("name"))
+                                .bind("url_avatar", userTarget.get("url_avatar"))
+                                .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+                    }).get();
+                    chatroomTargetID = jdbi.withHandle(h -> {
+                        StringBuilder sql = new StringBuilder()
+                                .append("INSERT INTO chatrooms (id_user, id_user_target, name, url_avatar) ")
+                                .append("VALUES (:id_user, :id_user_target, :name, :url_avatar)");
+                        return h.createUpdate(sql.toString())
+                                .bind("id_user", targetID)
+                                .bind("id_user_target", id)
+                                .bind("name", user.get("name"))
+                                .bind("url_avatar", user.get("url_avatar"))
+                                .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+                    }).get();
+                }
+            }
+            Integer newChatroomID = chatroomID, newChatroomTargetID = chatroomTargetID;
+            jdbi.useHandle(h -> {
+                String sql = "INSERT INTO messages (id_chatroom, status, content) VALUES (:id_chatroom, :status, :content)";
+                h.createUpdate(sql).bind("id_chatroom", newChatroomID).bind("status", 2).bind("content", content).execute();
+                h.createUpdate(sql).bind("id_chatroom", newChatroomTargetID).bind("status", 0).bind("content", content).execute();
+            });
+            Map<String, Object> chatroom = jdbi.withHandle(h -> {
+                String sql = "SELECT id AS id_chatroom, name, url_avatar FROM chatrooms WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", newChatroomID).mapToMap().findFirst();
+            }).get();
+            rsp.set(chatroom);
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                String sql = "SELECT status, content, ts_create FROM messages WHERE id_chatroom = :id_chatroom ORDER BY ts_create DESC LIMIT 100";
+                return h.createQuery(sql).bind("id_chatroom", chatroom.get("id_chatroom")).mapToMap().list();
+            });
+            for (Map<String, Object> r : records) {
+                finalizeDatetime(timePattern, r, "ts_create");
+            }
+            return rsp.set("messages", records).body();
+        });
+
     }
 
     /* response adapter */

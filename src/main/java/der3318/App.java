@@ -34,7 +34,7 @@ public class App {
                 String method = ctx.getMethod();
                 String path = ctx.getRequestPath();
                 String params = ctx.queryString().isEmpty() ? "NONE" : ctx.queryString();
-                String body = ctx.body().bytes().length == 0 ? "NONE" : new String(ctx.body().bytes());
+                String body = ctx.body().bytes().length == 0 ? "NONE" : new String(ctx.body().bytes(), "UTF-8");
                 synchronized (app) {
                     String msg = String.format(format, took, ip, method, path, params, body);
                     app.getLog().info(msg);
