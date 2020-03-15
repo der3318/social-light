@@ -43,7 +43,7 @@ public class App {
             });
 
             /* routes of api v1 */
-            app.use("/api/v1", new ApplicationProgrammingInterfaceVerion1());
+            app.use("/api/v1", new ApplicationProgrammingInterfaceVersion1());
 
         });
 

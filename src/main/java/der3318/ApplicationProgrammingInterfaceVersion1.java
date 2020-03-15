@@ -24,7 +24,7 @@ import io.jooby.hikari.HikariModule;
 import io.jooby.jdbi.JdbiModule;
 import io.jooby.json.JacksonModule;
 
-public class ApplicationProgrammingInterfaceVerion1 extends Jooby {
+public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
     {
         /* database interface */
         install(new HikariModule());
@@ -155,21 +155,138 @@ public class ApplicationProgrammingInterfaceVerion1 extends Jooby {
                 String params = req.containsKey("id_board") ? "id_board = :id_board" : "id_board >= 0";
                 params = req.containsKey("id_user") ? params + " AND id_user = :id_user" : params;
                 params = req.containsKey("keyword") ? params + " AND title LIKE '%' || :keyword || '%'" : params;
-                params = req.containsKey("ts") ? params + " AND ts_create >= DATE(:ts)" : params;
+                params = req.containsKey("ts") ? params + " AND ts_create >= :ts" : params;
+                params = policy == 1 ? params + " ORDER BY ts_create DESC" : policy == 2 ? params + " ORDER by title" : params;
                 String sql = String.format("SELECT id, id_user, id_board, title, content, url_avatar, ts_create FROM posts WHERE %s", params);
                 return h.createQuery(sql).bindMap(req).mapToMap().list();
             });
-            for (Map<String, Object> record : records) {
-                Matcher matcher = timePattern.matcher((String) record.get("ts_create"));
-                if (matcher.find()) {
-                    record.put("ts_create", matcher.group());
-                }
+            for (Map<String, Object> r : records) {
+                finalizeDatetime(timePattern, r, "ts_create");
             }
             return rsp.set("posts", records).body();
         });
+
+        /* [api] publish or update post */
+        post("/post/update", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Integer userID = (Integer) req.getOrDefault("id_user", Integer.MIN_VALUE);
+            Integer boardID = (Integer) req.getOrDefault("id_board", Integer.MIN_VALUE);
+            String title = (String) req.getOrDefault("title", "");
+            String content = (String) req.getOrDefault("content", "");
+            String avatar = (String) req.getOrDefault("url_avatar", "");
+            String token = (String) req.getOrDefault("token", "");
+            Optional<Map<String, Object>> userRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name FROM users WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", userID).mapToMap().findFirst();
+            });
+            if (!userRecord.isPresent()) {
+                return rsp.set("code", -1).body();
+            }
+            Optional<Map<String, Object>> boardRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name FROM boards WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", boardID).mapToMap().findFirst();
+            });
+            if (boardID != -1 && !boardRecord.isPresent()) {
+                return rsp.set("code", -2).body();
+            }
+            if (title.isEmpty() || content.isEmpty() || avatar.isEmpty()) {
+                return rsp.set("code", -3).body();
+            }
+            if (!tokens.containsKey(userID) || !tokens.get(userID).equals(token)) {
+                return rsp.set("code", -4).body();
+            }
+            Optional<Map<String, Object>> postRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT id FROM posts WHERE id = :id AND id_user = :user_id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).bind("user_id", userID).mapToMap().findFirst();
+            });
+            Optional<Integer> newRecord = jdbi.withHandle(h -> {
+                String sql = "INSERT INTO posts (id_user, id_board, title, content, url_avatar) VALUES (:id_user, :id_board, :title, :content, :url_avatar)";
+                if (postRecord.isPresent()) {
+                    String params = "id_user = :id_user, id_board = :id_board, title = :title, content = :content, url_avatar = :url_avatar";
+                    sql = String.format("UPDATE posts SET %s WHERE id = :id", params);
+                }
+                return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+            });
+            if(newRecord.isPresent()) {
+                return rsp.set("id", newRecord.get()).body();
+            }
+            return rsp.set("id", id).body();
+        });
+
+        /* [api] get post info and related comments */
+        post("/post", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Optional<Map<String, Object>> record = jdbi.withHandle(h -> {
+                String sql = "SELECT id_user, id_board, title, content, url_avatar, ts_create FROM posts WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            if (!record.isPresent()) {
+                return rsp.set("code", -1).body();
+            }
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                String sql = "SELECT id, id_user, content, ts_create FROM comments WHERE id_post = :id ORDER BY ts_create ASC";
+                return h.createQuery(sql).bind("id", id).mapToMap().list();
+            });
+            finalizeDatetime(timePattern, record.get(), "ts_create");
+            for (Map<String, Object> r : records) {
+                finalizeDatetime(timePattern, r, "ts_create");
+            }
+            return rsp.set(record.get()).set("comments", records).body();
+        });
+
+        /* publish or update a comment */
+        post("/comment/update", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Integer userID = (Integer) req.getOrDefault("id_user", Integer.MIN_VALUE);
+            Integer postID = (Integer) req.getOrDefault("id_post", Integer.MIN_VALUE);
+            String content = (String) req.getOrDefault("content", "");
+            String token = (String) req.getOrDefault("token", "");
+            Optional<Map<String, Object>> userRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT name FROM users WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", userID).mapToMap().findFirst();
+            });
+            if (!userRecord.isPresent()) {
+                return rsp.set("code", -1).body();
+            }
+            Optional<Map<String, Object>> postRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT title FROM posts WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", postID).mapToMap().findFirst();
+            });
+            if (!postRecord.isPresent()) {
+                return rsp.set("code", -2).body();
+            }
+            if (content.isEmpty()) {
+                return rsp.set("code", -3).body();
+            }
+            if (!tokens.containsKey(userID) || !tokens.get(userID).equals(token)) {
+                return rsp.set("code", -4).body();
+            }
+            Optional<Map<String, Object>> commentRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT id FROM comments WHERE id = :id AND id_user = :user_id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).bind("user_id", userID).mapToMap().findFirst();
+            });
+            Optional<Integer> newRecord = jdbi.withHandle(h -> {
+                String sql = "INSERT INTO comments (id_user, id_post, content) VALUES (:id_user, :id_post, :content)";
+                if (commentRecord.isPresent()) {
+                    String params = "id_user = :id_user, id_post = :id_post, content = :content";
+                    sql = String.format("UPDATE comments SET %s WHERE id = :id", params);
+                }
+                return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+            });
+            if(newRecord.isPresent()) {
+                return rsp.set("id", newRecord.get()).body();
+            }
+            return rsp.set("id", id).body();
+        });
     }
 
-    /* response wrapper */
+    /* response adapter */
     private static class JsonResponse {
         Map<String, Object> response;
 
@@ -202,6 +319,14 @@ public class ApplicationProgrammingInterfaceVerion1 extends Jooby {
             return String.format("%064x", new BigInteger(1, digest.digest()));
         } catch (NoSuchAlgorithmException e) {
             return text;
+        }
+    }
+
+    /* finalize datetime string */
+    private static void finalizeDatetime(Pattern pattern, Map<String, Object> map, String columnName) {
+        Matcher matcher = pattern.matcher((String) map.get(columnName));
+        if (matcher.find()) {
+            map.put(columnName, matcher.group());
         }
     }
 }
