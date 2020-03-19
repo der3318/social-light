@@ -1,6 +1,9 @@
 package der3318;
 
+import java.nio.file.Paths;
+
 import io.jooby.ServerOptions;
+import io.jooby.pebble.PebbleModule;
 
 import static io.jooby.Jooby.runApp;
 
@@ -24,6 +27,11 @@ public class App {
             int port = 3319, securePort = 3320;
             app.setServerOptions(ServerOptions.from(app.getConfig()).get().setPort(port).setSecurePort(securePort));
 
+            /* templates and assets */
+            app.install(new PebbleModule("public/views"));
+            app.assets("/images/*", "public/images");
+            app.assets("/javascripts/*", "public/javascripts");
+
             /* log info */
             app.decorator(next -> ctx -> {
                 long start = System.currentTimeMillis();
@@ -44,6 +52,9 @@ public class App {
 
             /* routes of api v1 */
             app.use("/api/v1", new ApplicationProgrammingInterfaceVersion1());
+
+            /* routes of admin portal */
+            app.use("/admin", new AdminPortal());
 
         });
 

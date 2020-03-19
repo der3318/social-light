@@ -231,11 +231,12 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                 String sql = "SELECT id, id_user, content, ts_create FROM comments WHERE id_post = :id ORDER BY ts_create ASC";
                 return h.createQuery(sql).bind("id", id).mapToMap().list();
             });
-            finalizeDatetime(timePattern, record.get(), "ts_create");
+            Map<String, Object> post = record.get();
+            finalizeDatetime(timePattern, post, "ts_create");
             for (Map<String, Object> r : records) {
                 finalizeDatetime(timePattern, r, "ts_create");
             }
-            return rsp.set(record.get()).set("comments", records).body();
+            return rsp.set(post).set("comments", records).body();
         });
 
         /* publish or update a comment */
@@ -404,14 +405,11 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                 String sql = "SELECT name, url_avatar FROM users WHERE id = :id LIMIT 1";
                 return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
             });
-            if (!userRecord.isPresent()) {
-                return rsp.set("code", -1).body();
-            }
             Optional<Map<String, Object>> userTargetRecord = jdbi.withHandle(h -> {
                 String sql = "SELECT name, url_avatar FROM users WHERE id = :id LIMIT 1";
                 return h.createQuery(sql).bind("id", targetID).mapToMap().findFirst();
             });
-            if (!userTargetRecord.isPresent()) {
+            if (!userRecord.isPresent() || !userTargetRecord.isPresent()) {
                 return rsp.set("code", -1).body();
             }
             Map<String, Object> user = userRecord.get(), userTarget = userTargetRecord.get();
@@ -480,7 +478,6 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             }
             return rsp.set("messages", records).body();
         });
-
     }
 
     /* response adapter */

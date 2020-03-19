@@ -1,0 +1,50 @@
+<html>
+
+<head>
+    <title>Social Light - {% block title %}{% endblock %}</title>
+    <link rel="icon" href="/images/icon.png">
+    <link rel="stylesheet prefetch"
+          href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link rel="stylesheet prefetch"
+          href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/icon.min.css">
+    <link rel="stylesheet prefetch"
+          href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/modal.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/modal.min.js"></script>
+</head>
+
+<body>
+
+<!-- navigation bar -->
+<div id="navigation" class="ui inverted black menu">
+    <a class="ui item" href="/">
+        <h5><i class="home icon"></i> Social Light </h5>
+    </a>
+    <div class="right inverted menu">
+        <a class="ui item" href="/">
+            <h5><i class="user icon"></i> Login </h5>
+        </a>
+    </div>
+</div>
+
+<!-- content -->
+<div id="content">
+    <br><br> {% block content %}{% endblock %}
+</div>
+
+<!-- footer -->
+<div id="footer">
+    <br><br>
+    {% block footer %}
+    <div class="ui center aligned grid"> © Copyright 2020 der3318</div>
+    {% endblock %}
+</div>
+
+<!-- scripts -->
+<script type="text/javascript" src="/javascripts/base.js"></script>
+{% block scripts %}{% endblock %}
+
+</body>
+
+</html>
