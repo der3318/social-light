@@ -10,7 +10,8 @@
             <a id="users" class="item"><h5><i class="chart bar outline icon"></i> Users </h5></a>
             <a id="boards" class="item"><h5><i class="chart bar outline icon"></i> Boards </h5></a>
             <a id="posts" class="item"><h5><i class="chart bar outline icon"></i> Posts </h5></a>
-            <a id="comments" class="item"><h5><i class="chart bar outline icon"></i> Comments </h5></a>
+            <a id="comments" class="item"><h5><i class="chart bar outline icon"></i> Comments </h5>
+            </a>
         </div>
         <div class="ui fluid icon inverted transparent input">
             <input id="keyword" type="text" placeholder="Search by Keyword or ID">
@@ -42,6 +43,18 @@
             <tbody id="data">
             </tbody>
         </table>
+        <div id="searching-successful" class="ui inverted black progress">
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+        <div id="searching-busy" class="ui icon inverted message">
+            <i class="notched circle loading icon"></i>
+            <div class="content">
+                <div class="header"> Proceeding</div>
+                <p> Connecting to Database </p>
+            </div>
+        </div>
     </div>
     <div class="one wide column"></div>
 </div>

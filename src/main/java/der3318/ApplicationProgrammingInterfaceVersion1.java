@@ -484,15 +484,19 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
             JsonResponse rsp = new JsonResponse(0);
             String search = (String) req.getOrDefault("search", "");
+            StringBuilder params = new StringBuilder()
+                    .append("id = :search OR account LIKE '%' || :search || '%' OR name LIKE '%' || :search || '%' ")
+                    .append("OR location LIKE '%' || :search || '%' OR motto LIKE '%' || :search || '%' OR intro LIKE '%' || :search || '%' ")
+                    .append("ORDER BY (id = :search) DESC, (account LIKE '%' || :search || '%') DESC, (name LIKE '%' || :search || '%') DESC");
             List<Map<String, Object>> records = jdbi.withHandle(h -> {
-                StringBuilder params = new StringBuilder()
-                        .append("id = :search OR account LIKE '%' || :search || '%' OR name LIKE '%' || :search || '%' ")
-                        .append("OR location LIKE '%' || :search || '%' OR motto LIKE '%' || :search || '%' OR intro LIKE '%' || :search || '%' ")
-                        .append("ORDER BY (id = :search) DESC, (account LIKE '%' || :search || '%') DESC, (name LIKE '%' || :search || '%') DESC LIMIT 100");
-                String sql = String.format("SELECT id, account, password, name, type, location, motto, intro, url_avatar FROM users WHERE %s", params);
+                String sql = String.format("SELECT id, account, password, name, type, location, motto, intro, url_avatar FROM users WHERE %s LIMIT 5", params);
                 return h.createQuery(sql).bind("search", search).mapToMap().list();
             });
-            return rsp.set("data", records).body();
+            Optional<Map<String, Object>> countRecord = jdbi.withHandle(h -> {
+                String sql = String.format("SELECT COUNT(*) AS count FROM users WHERE %s", params);
+                return h.createQuery(sql).bind("search", search).mapToMap().findFirst();
+            });
+            return rsp.set("data", records).set("total", countRecord.get().get("count")).body();
         });
 
         /* [api] admin view boards */
@@ -500,14 +504,18 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
             JsonResponse rsp = new JsonResponse(0);
             String search = (String) req.getOrDefault("search", "");
+            StringBuilder params = new StringBuilder()
+                    .append("id = :search OR name LIKE '%' || :search || '%' ")
+                    .append("ORDER BY (id = :search) DESC, (name LIKE '%' || :search || '%') DESC");
             List<Map<String, Object>> records = jdbi.withHandle(h -> {
-                StringBuilder params = new StringBuilder()
-                        .append("id = :search OR name LIKE '%' || :search || '%' ")
-                        .append("ORDER BY (id = :search) DESC, (name LIKE '%' || :search || '%') DESC LIMIT 100");
-                String sql = String.format("SELECT id, name FROM boards WHERE %s", params);
+                String sql = String.format("SELECT id, name FROM boards WHERE %s LIMIT 5", params);
                 return h.createQuery(sql).bind("search", search).mapToMap().list();
             });
-            return rsp.set("data", records).body();
+            Optional<Map<String, Object>> countRecord = jdbi.withHandle(h -> {
+                String sql = String.format("SELECT COUNT(*) AS count FROM boards WHERE %s", params);
+                return h.createQuery(sql).bind("search", search).mapToMap().findFirst();
+            });
+            return rsp.set("data", records).set("total", countRecord.get().get("count")).body();
         });
 
         /* [api] admin view posts */
@@ -515,18 +523,22 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
             JsonResponse rsp = new JsonResponse(0);
             String search = (String) req.getOrDefault("search", "");
+            StringBuilder params = new StringBuilder()
+                    .append("id = :search OR id_user = :search OR id_board = :search ")
+                    .append("OR title LIKE '%' || :search || '%' OR content LIKE '%' || :search || '%' ")
+                    .append("ORDER BY (id = :search) DESC, (id_user = :search) DESC, (id_board = :search) DESC");
             List<Map<String, Object>> records = jdbi.withHandle(h -> {
-                StringBuilder params = new StringBuilder()
-                        .append("id = :search OR id_user = :search OR id_board = :search ")
-                        .append("OR title LIKE '%' || :search || '%' OR content LIKE '%' || :search || '%' ")
-                        .append("ORDER BY (id = :search) DESC, (id_user = :search) DESC, (id_board = :search) DESC LIMIT 100");
-                String sql = String.format("SELECT id, id_user, id_board, title, content, url_avatar, ts_create FROM posts WHERE %s", params);
+                String sql = String.format("SELECT id, id_user, id_board, title, content, url_avatar, ts_create FROM posts WHERE %s LIMIT 5", params);
                 return h.createQuery(sql).bind("search", search).mapToMap().list();
             });
             for (Map<String, Object> r : records) {
                 finalizeDatetime(timePattern, r, "ts_create");
             }
-            return rsp.set("data", records).body();
+            Optional<Map<String, Object>> countRecord = jdbi.withHandle(h -> {
+                String sql = String.format("SELECT COUNT(*) AS count FROM posts WHERE %s", params);
+                return h.createQuery(sql).bind("search", search).mapToMap().findFirst();
+            });
+            return rsp.set("data", records).set("total", countRecord.get().get("count")).body();
         });
     }
 
