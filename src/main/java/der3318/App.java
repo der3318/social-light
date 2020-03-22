@@ -1,7 +1,5 @@
 package der3318;
 
-import java.nio.file.Paths;
-
 import io.jooby.ServerOptions;
 import io.jooby.pebble.PebbleModule;
 
@@ -30,6 +28,7 @@ public class App {
             /* templates and assets */
             app.install(new PebbleModule("public/views"));
             app.assets("/images/*", "public/images");
+            app.assets("/icons/*", "public/icons");
             app.assets("/javascripts/*", "public/javascripts");
 
             /* log info */

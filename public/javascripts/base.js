@@ -11,7 +11,7 @@ document.getElementById("content").style.opacity = 0.8;
 document.getElementById("footer").style.opacity = 0.8;
 
 /* fonts */
-document.body.style.fontFamily = "Comic Sans MS";
+document.body.style.fontFamily = "Comic Sans MS, Microsoft JhengHei";
 
 /* api with json */
 function connectAndUpdate(url, verb, request, action) {
@@ -21,6 +21,7 @@ function connectAndUpdate(url, verb, request, action) {
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
             var response = JSON.parse(xhr.responseText);
+            console.log(response);
             action(response);
         }
     }
