@@ -7,11 +7,11 @@ function viewUsers(search) {
             var row = div.insertRow(div.rows.length);
             row.insertCell(0).innerHTML = e.id;
             row.insertCell(1).innerHTML = e.name + keyIcon + e.account + "/" + e.password;
-            row.innerHTML += '<td class="selectable"><a href="#' + e.id + '"><i class="edit outline icon"></i></a></td>';
+            row.innerHTML += '<td class="selectable"><a onclick="popUserInfo(' + e.id  + ')"><i class="edit outline icon"></i></a></td>';
         });
         document.getElementById("searching-busy").style.visibility = "hidden";
         document.getElementById("searching-successful").style.visibility = "visible";
-        $('#searching-successful').progress({autoSuccess: false, value: rsp.data.length, total: rsp.total, text: {percent: 'showing {value} of {total}'}});
+        $("#searching-successful").progress({autoSuccess: false, value: rsp.data.length, total: rsp.total, text: {percent: "showing {value} of {total}"}});
     });
 }
 
@@ -27,7 +27,7 @@ function viewBoards(search) {
         });
         document.getElementById("searching-busy").style.visibility = "hidden";
         document.getElementById("searching-successful").style.visibility = "visible";
-        $('#searching-successful').progress({autoSuccess: false, value: rsp.data.length, total: rsp.total, text: {percent: 'showing {value} of {total}'}});
+        $("#searching-successful").progress({autoSuccess: false, value: rsp.data.length, total: rsp.total, text: {percent: "showing {value} of {total}"}});
     });
 }
 
@@ -44,8 +44,14 @@ function viewPosts(search) {
         });
         document.getElementById("searching-busy").style.visibility = "hidden";
         document.getElementById("searching-successful").style.visibility = "visible";
-        $('#searching-successful').progress({autoSuccess: false, value: rsp.data.length, total: rsp.total, text: {percent: 'showing {value} of {total}'}});
+        $("#searching-successful").progress({autoSuccess: false, value: rsp.data.length, total: rsp.total, text: {percent: "showing {value} of {total}"}});
     });
+}
+
+/* pop user detailed info */
+function popUserInfo(id) {
+    console.log("popUserInfo(" + id + ")");
+    $("#data-user").modal("show");
 }
 
 /* document ready */
@@ -80,7 +86,6 @@ document.addEventListener("DOMContentLoaded", function(){
         current = hp;
         current.className = "active item";
         setTimeout(function(){ viewPosts(document.getElementById("keyword").value.trim()); }, 1000);
-
     });
     document.getElementById("search").addEventListener("click", function() {
         current.click();

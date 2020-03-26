@@ -6,6 +6,7 @@
 <div class="ui grid">
     <div class="one wide column"></div>
     <div class="four wide column">
+        <!-- menu -->
         <div class="ui vertical inverted black menu">
             <a id="users" class="item"><h5><i class="chart bar outline icon"></i> Users </h5></a>
             <a id="boards" class="item"><h5><i class="chart bar outline icon"></i> Boards </h5></a>
@@ -13,12 +14,14 @@
             <a id="comments" class="item"><h5><i class="chart bar outline icon"></i> Comments </h5>
             </a>
         </div>
+        <!-- keyword search -->
         <div class="ui fluid icon inverted transparent input">
             <input id="keyword" type="text" placeholder="Search by Keyword or ID">
             <i id="search" class="search link icon"></i>
         </div>
     </div>
     <div class="ten wide column">
+        <!-- additional functions -->
         <div class="ui grid">
             <div class="eight wide column">
                 <button class="ui fluid basic inverted button">
@@ -31,6 +34,7 @@
                 </button>
             </div>
         </div>
+        <!-- table view -->
         <table class="ui celled inverted black table">
             <thead>
             <tr>
@@ -43,11 +47,13 @@
             <tbody id="data">
             </tbody>
         </table>
+        <!-- result info -->
         <div id="searching-successful" class="ui inverted black progress">
             <div class="bar">
                 <div class="progress"></div>
             </div>
         </div>
+        <!-- loading animation -->
         <div id="searching-busy" class="ui icon inverted message">
             <i class="notched circle loading icon"></i>
             <div class="content">
@@ -57,6 +63,71 @@
         </div>
     </div>
     <div class="one wide column"></div>
+</div>
+<!-- user detailed info -->
+<div id="data-user" class="ui basic modal">
+    <div class="content">
+        <div class="ui grid">
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> ID</div>
+                    <input type="text" placeholder="1">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Account</div>
+                    <input type="text" placeholder="account1">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Password</div>
+                    <input type="text" placeholder="password1">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Name</div>
+                    <input type="text" placeholder="測試使用者">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Type</div>
+                    <input type="text" placeholder="癌症病人">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Location</div>
+                    <input type="text" placeholder="Taipei City">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Motto</div>
+                    <input type="text" placeholder="座右銘1">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Url Avatar</div>
+                    <input type="text" placeholder="https://i.imgur.com/PLjbhKB.png">
+                </div>
+            </div>
+            <div class="sixteen wide column">
+                <div class="ui fluid inverted form">
+                    <div class="field"><textarea>https://i.imgur.com/PLjbhKB.png</textarea></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui basic cancel inverted button"><i class="remove icon"></i> Cancel</div>
+        <div class="ui ok inverted red button"><i class="trash alternate icon"></i> Delete</div>
+        <div class="ui ok inverted green button"><i class="save icon"></i> Update</div>
+    </div>
 </div>
 {% endblock %}
 
