@@ -540,6 +540,29 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             });
             return rsp.set("data", records).set("total", countRecord.get().get("count")).body();
         });
+
+        /* [api] admin view comments */
+        post("/admin/comments", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            String search = (String) req.getOrDefault("search", "");
+            StringBuilder params = new StringBuilder()
+                    .append("id = :search OR id_user = :search OR id_post = :search ")
+                    .append("OR content LIKE '%' || :search || '%' ")
+                    .append("ORDER BY (id = :search) DESC, (id_user = :search) DESC, (id_post = :search) DESC");
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                String sql = String.format("SELECT id, id_user, id_post, content, ts_create FROM comments WHERE %s LIMIT 5", params);
+                return h.createQuery(sql).bind("search", search).mapToMap().list();
+            });
+            for (Map<String, Object> r : records) {
+                finalizeDatetime(timePattern, r, "ts_create");
+            }
+            Optional<Map<String, Object>> countRecord = jdbi.withHandle(h -> {
+                String sql = String.format("SELECT COUNT(*) AS count FROM comments WHERE %s", params);
+                return h.createQuery(sql).bind("search", search).mapToMap().findFirst();
+            });
+            return rsp.set("data", records).set("total", countRecord.get().get("count")).body();
+        });
     }
 
     /* response adapter */

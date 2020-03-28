@@ -29,7 +29,7 @@
                 </button>
             </div>
             <div class="eight wide column">
-                <button class="ui fluid basic inverted button">
+                <button id="new" class="ui fluid basic inverted button">
                     <i class="plus square outline icon"></i> Add / New
                 </button>
             </div>
@@ -65,68 +65,202 @@
     <div class="one wide column"></div>
 </div>
 <!-- user detailed info -->
-<div id="data-user" class="ui basic modal">
+<div id="user-data" class="ui basic modal">
     <div class="content">
         <div class="ui grid">
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
-                    <div class="ui label"> ID</div>
-                    <input type="text" placeholder="1">
+                    <div class="ui label"> ID (Do Not Modify)</div>
+                    <input id="user-id" type="text">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Account</div>
-                    <input type="text" placeholder="account1">
+                    <input id="user-account" type="text">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Password</div>
-                    <input type="text" placeholder="password1">
+                    <input id="user-password" type="text">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Name</div>
-                    <input type="text" placeholder="測試使用者">
+                    <input id="user-name" type="text">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Type</div>
-                    <input type="text" placeholder="癌症病人">
+                    <input id="user-type" type="text">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Location</div>
-                    <input type="text" placeholder="Taipei City">
+                    <input id="user-location" type="text">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Motto</div>
-                    <input type="text" placeholder="座右銘1">
+                    <input id="user-motto" type="text">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
-                    <div class="ui label"> Url Avatar</div>
-                    <input type="text" placeholder="https://i.imgur.com/PLjbhKB.png">
+                    <div class="ui label"> Avatar URL</div>
+                    <input id="user-url_avatar" type="text">
                 </div>
             </div>
             <div class="sixteen wide column">
                 <div class="ui fluid inverted form">
-                    <div class="field"><textarea>https://i.imgur.com/PLjbhKB.png</textarea></div>
+                    <div class="field"><textarea id="user-intro"></textarea></div>
                 </div>
             </div>
         </div>
     </div>
     <div class="actions">
         <div class="ui basic cancel inverted button"><i class="remove icon"></i> Cancel</div>
-        <div class="ui ok inverted red button"><i class="trash alternate icon"></i> Delete</div>
-        <div class="ui ok inverted green button"><i class="save icon"></i> Update</div>
+        <div id="user-delete" class="ui ok inverted red button">
+            <i class="trash alternate icon"></i> Delete
+        </div>
+        <div id="user-update" class="ui ok inverted green button">
+            <i class="save icon"></i> Update
+        </div>
+    </div>
+</div>
+<!-- board detailed info -->
+<div id="board-data" class="ui basic modal">
+    <div class="content">
+        <div class="ui grid">
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> ID (Do Not Modify)</div>
+                    <input id="board-id" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Name</div>
+                    <input id="board-name" type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui basic cancel inverted button"><i class="remove icon"></i> Cancel</div>
+        <div id="board-delete" class="ui ok inverted red button">
+            <i class="trash alternate icon"></i> Delete
+        </div>
+        <div id="board-update" class="ui ok inverted green button">
+            <i class="save icon"></i> Update
+        </div>
+    </div>
+</div>
+<!-- post detailed info -->
+<div id="post-data" class="ui basic modal">
+    <div class="content">
+        <div class="ui grid">
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> ID (Do Not Modify)</div>
+                    <input id="post-id" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Linked User ID</div>
+                    <input id="post-id_user" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Linked Board ID</div>
+                    <input id="post-id_board" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Title</div>
+                    <input id="post-title" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Avatar URL</div>
+                    <input id="post-url_avatar" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Created At</div>
+                    <input id="post-ts_create" type="text">
+                </div>
+            </div>
+            <div class="sixteen wide column">
+                <div class="ui fluid inverted form">
+                    <div class="field"><textarea id="post-content"></textarea></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui basic cancel inverted button"><i class="remove icon"></i> Cancel</div>
+        <div id="post-delete" class="ui ok inverted red button">
+            <i class="trash alternate icon"></i> Delete
+        </div>
+        <div id="post-update" class="ui ok inverted green button">
+            <i class="save icon"></i> Update
+        </div>
+    </div>
+</div>
+<!-- comment detailed info -->
+<div id="comment-data" class="ui basic modal">
+    <div class="content">
+        <div class="ui grid">
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> ID (Do Not Modify)</div>
+                    <input id="comment-id" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Linked User ID</div>
+                    <input id="comment-id_user" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Linked Post ID</div>
+                    <input id="comment-id_post" type="text">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui fluid labeled inverted input">
+                    <div class="ui label"> Created At</div>
+                    <input id="comment-ts_create" type="text">
+                </div>
+            </div>
+            <div class="sixteen wide column">
+                <div class="ui fluid inverted form">
+                    <div class="field"><textarea id="comment-content"></textarea></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui basic cancel inverted button"><i class="remove icon"></i> Cancel</div>
+        <div id="comment-delete" class="ui ok inverted red button">
+            <i class="trash alternate icon"></i> Delete
+        </div>
+        <div id="comment-update" class="ui ok inverted green button">
+            <i class="save icon"></i> Update
+        </div>
     </div>
 </div>
 {% endblock %}
