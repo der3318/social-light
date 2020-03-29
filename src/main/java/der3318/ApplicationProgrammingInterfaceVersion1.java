@@ -38,7 +38,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
 
         /* specify response type as json */
         decorator(next -> ctx -> {
-            ctx.setResponseType(MediaType.json);
+            ctx.setResponseType(MediaType.json, StandardCharsets.UTF_8);
             return mapper.writeValueAsString(next.apply(ctx));
         });
 
@@ -119,15 +119,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             Map<String, Object> user = record.get();
             user.putAll(req);
             jdbi.useHandle(h -> {
-                StringBuilder params = new StringBuilder()
-                        .append("password = :password, ")
-                        .append("name = :name, ")
-                        .append("type = :type, ")
-                        .append("location = :location, ")
-                        .append("motto = :motto, ")
-                        .append("intro = :intro, ")
-                        .append("url_avatar = :url_avatar");
-                String sql = String.format("UPDATE users SET %s WHERE id = :id", params);
+                String sql = "UPDATE users SET password = :password, name = :name, type = :type, location = :location, motto = :motto, intro = :intro, url_avatar = :url_avatar WHERE id = :id";
                 h.createUpdate(sql).bindMap(user).execute();
             });
             return rsp.body();
@@ -204,12 +196,11 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             Optional<Integer> newRecord = jdbi.withHandle(h -> {
                 String sql = "INSERT INTO posts (id_user, id_board, title, content, url_avatar) VALUES (:id_user, :id_board, :title, :content, :url_avatar)";
                 if (postRecord.isPresent()) {
-                    String params = "id_user = :id_user, id_board = :id_board, title = :title, content = :content, url_avatar = :url_avatar";
-                    sql = String.format("UPDATE posts SET %s WHERE id = :id", params);
+                    sql = "UPDATE posts SET id_user = :id_user, id_board = :id_board, title = :title, content = :content, url_avatar = :url_avatar WHERE id = :id";
                 }
                 return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
             });
-            if (newRecord.isPresent()) {
+            if (!postRecord.isPresent() && newRecord.isPresent()) {
                 return rsp.set("id", newRecord.get()).body();
             }
             return rsp.set("id", id).body();
@@ -275,12 +266,11 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             Optional<Integer> newRecord = jdbi.withHandle(h -> {
                 String sql = "INSERT INTO comments (id_user, id_post, content) VALUES (:id_user, :id_post, :content)";
                 if (commentRecord.isPresent()) {
-                    String params = "id_user = :id_user, id_post = :id_post, content = :content";
-                    sql = String.format("UPDATE comments SET %s WHERE id = :id", params);
+                    sql = "UPDATE comments SET id_user = :id_user, id_post = :id_post, content = :content WHERE id = :id";
                 }
                 return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
             });
-            if (newRecord.isPresent()) {
+            if (!commentRecord.isPresent() && newRecord.isPresent()) {
                 return rsp.set("id", newRecord.get()).body();
             }
             return rsp.set("id", id).body();
@@ -311,10 +301,8 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             });
             for (Map<String, Object> r : records) {
                 Optional<Map<String, Object>> msgRecord = jdbi.withHandle(h -> {
-                    StringBuilder sql = new StringBuilder()
-                            .append("SELECT status AS lastmsg_status, content AS lastmsg_content ")
-                            .append("FROM messages WHERE id_chatroom = :id AND ts_create = :lastmsg_ts LIMIT 1");
-                    return h.createQuery(sql.toString()).bindMap(r).mapToMap().findFirst();
+                    String sql = "SELECT status AS lastmsg_status, content AS lastmsg_content FROM messages WHERE id_chatroom = :id AND ts_create = :lastmsg_ts LIMIT 1";
+                    return h.createQuery(sql).bindMap(r).mapToMap().findFirst();
                 });
                 r.putAll(msgRecord.get());
                 finalizeDatetime(timePattern, r, "lastmsg_ts");
@@ -370,10 +358,8 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                 return rsp.set("code", -1).body();
             }
             Optional<Map<String, Object>> chatroomRecord = jdbi.withHandle(h -> {
-                StringBuilder sql = new StringBuilder()
-                        .append("SELECT id AS id_chatroom, name, url_avatar ")
-                        .append("FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1");
-                return h.createQuery(sql.toString()).bind("id_user", id).bind("id_user_target", targetID).mapToMap().findFirst();
+                String sql = "SELECT id AS id_chatroom, name, url_avatar FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1";
+                return h.createQuery(sql).bind("id_user", id).bind("id_user_target", targetID).mapToMap().findFirst();
             });
             if (!chatroomRecord.isPresent()) {
                 return rsp.set("code", -2).body();
@@ -419,26 +405,20 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             Integer chatroomID = -1, chatroomTargetID = -1;
             synchronized (this) {
                 Optional<Map<String, Object>> chatroomRecord = jdbi.withHandle(h -> {
-                    StringBuilder sql = new StringBuilder()
-                            .append("SELECT id AS id_chatroom, name, url_avatar ")
-                            .append("FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1");
-                    return h.createQuery(sql.toString()).bind("id_user", id).bind("id_user_target", targetID).mapToMap().findFirst();
+                    String sql = "SELECT id AS id_chatroom, name, url_avatar FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1";
+                    return h.createQuery(sql).bind("id_user", id).bind("id_user_target", targetID).mapToMap().findFirst();
                 });
                 Optional<Map<String, Object>> chatroomTargetRecord = jdbi.withHandle(h -> {
-                    StringBuilder sql = new StringBuilder()
-                            .append("SELECT id AS id_chatroom, name, url_avatar ")
-                            .append("FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1");
-                    return h.createQuery(sql.toString()).bind("id_user", targetID).bind("id_user_target", id).mapToMap().findFirst();
+                    String sql = "SELECT id AS id_chatroom, name, url_avatar FROM chatrooms WHERE id_user = :id_user AND id_user_target = :id_user_target LIMIT 1";
+                    return h.createQuery(sql).bind("id_user", targetID).bind("id_user_target", id).mapToMap().findFirst();
                 });
                 if (chatroomRecord.isPresent() && chatroomTargetRecord.isPresent()) {
                     chatroomID = (Integer) chatroomRecord.get().get("id_chatroom");
                     chatroomTargetID = (Integer) chatroomTargetRecord.get().get("id_chatroom");
                 } else {
                     chatroomID = jdbi.withHandle(h -> {
-                        StringBuilder sql = new StringBuilder()
-                                .append("INSERT INTO chatrooms (id_user, id_user_target, name, url_avatar) ")
-                                .append("VALUES (:id_user, :id_user_target, :name, :url_avatar)");
-                        return h.createUpdate(sql.toString())
+                        String sql = "INSERT INTO chatrooms (id_user, id_user_target, name, url_avatar) VALUES (:id_user, :id_user_target, :name, :url_avatar)";
+                        return h.createUpdate(sql)
                                 .bind("id_user", id)
                                 .bind("id_user_target", targetID)
                                 .bind("name", userTarget.get("name"))
@@ -446,10 +426,8 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                                 .executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
                     }).get();
                     chatroomTargetID = jdbi.withHandle(h -> {
-                        StringBuilder sql = new StringBuilder()
-                                .append("INSERT INTO chatrooms (id_user, id_user_target, name, url_avatar) ")
-                                .append("VALUES (:id_user, :id_user_target, :name, :url_avatar)");
-                        return h.createUpdate(sql.toString())
+                        String sql = "INSERT INTO chatrooms (id_user, id_user_target, name, url_avatar) VALUES (:id_user, :id_user_target, :name, :url_avatar)";
+                        return h.createUpdate(sql)
                                 .bind("id_user", targetID)
                                 .bind("id_user_target", id)
                                 .bind("name", user.get("name"))
@@ -562,6 +540,94 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                 return h.createQuery(sql).bind("search", search).mapToMap().findFirst();
             });
             return rsp.set("data", records).set("total", countRecord.get().get("count")).body();
+        });
+
+        /* [api] admin update user */
+        post("/admin/user/update", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Optional<Map<String, Object>> userRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT id FROM users WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            Optional<Integer> newRecord = jdbi.withHandle(h -> {
+                String sql = "INSERT INTO users (account, password, name, type, location, motto, intro, url_avatar) VALUES (:account, :password, :name, :type, :location, :motto, :intro, :url_avatar)";
+                if (userRecord.isPresent()) {
+                    sql = "UPDATE users SET account = :account, password = :password, name = :name, type = :type, location = :location, motto = :motto, intro = :intro, url_avatar = :url_avatar WHERE id = :id";
+                }
+                return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+            });
+            if (!userRecord.isPresent() && newRecord.isPresent()) {
+                return rsp.set("id", newRecord.get()).body();
+            }
+            return rsp.set("id", id).body();
+        });
+
+        /* [api] admin update board */
+        post("/admin/board/update", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Optional<Map<String, Object>> boardRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT id FROM boards WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            Optional<Integer> newRecord = jdbi.withHandle(h -> {
+                String sql = "INSERT INTO boards (name) VALUES (:name)";
+                if (boardRecord.isPresent()) {
+                    sql = "UPDATE boards SET name = :name WHERE id = :id";
+                }
+                return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+            });
+            if (!boardRecord.isPresent() && newRecord.isPresent()) {
+                return rsp.set("id", newRecord.get()).body();
+            }
+            return rsp.set("id", id).body();
+        });
+
+        /* [api] admin update post */
+        post("/admin/post/update", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Optional<Map<String, Object>> postRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT id FROM posts WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            Optional<Integer> newRecord = jdbi.withHandle(h -> {
+                String sql = "INSERT INTO posts (id_user, id_board, title, content, url_avatar, ts_create) VALUES (:id_user, :id_board, :title, :content, :url_avatar, :ts_create)";
+                if (postRecord.isPresent()) {
+                    sql = "UPDATE posts SET id_user = :id_user, id_board = :id_board, title = :title, content = :content, url_avatar = :url_avatar, ts_create = :ts_create WHERE id = :id";
+                }
+                return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+            });
+            if (!postRecord.isPresent() && newRecord.isPresent()) {
+                return rsp.set("id", newRecord.get()).body();
+            }
+            return rsp.set("id", id).body();
+        });
+
+        /* [api] admin update post */
+        post("/admin/comment/update", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            Optional<Map<String, Object>> commentRecord = jdbi.withHandle(h -> {
+                String sql = "SELECT id FROM comments WHERE id = :id LIMIT 1";
+                return h.createQuery(sql).bind("id", id).mapToMap().findFirst();
+            });
+            Optional<Integer> newRecord = jdbi.withHandle(h -> {
+                String sql = "INSERT INTO comments (id_user, id_post, content, ts_create) VALUES (:id_user, :id_post, :content, :ts_create)";
+                if (commentRecord.isPresent()) {
+                    sql = "UPDATE comments SET id_user = :id_user, id_post = :id_post, content = :content, ts_create = :ts_create WHERE id = :id";
+                }
+                return h.createUpdate(sql).bindMap(req).executeAndReturnGeneratedKeys("id").mapTo(Integer.class).findFirst();
+            });
+            if (!commentRecord.isPresent() && newRecord.isPresent()) {
+                return rsp.set("id", newRecord.get()).body();
+            }
+            return rsp.set("id", id).body();
         });
     }
 

@@ -1,5 +1,7 @@
 package der3318;
 
+import java.nio.charset.StandardCharsets;
+
 import io.jooby.ServerOptions;
 import io.jooby.pebble.PebbleModule;
 
@@ -41,7 +43,7 @@ public class App {
                 String method = ctx.getMethod();
                 String path = ctx.getRequestPath();
                 String params = ctx.queryString().isEmpty() ? "NONE" : ctx.queryString();
-                String body = ctx.body().bytes().length == 0 ? "NONE" : new String(ctx.body().bytes(), "UTF-8");
+                String body = ctx.body().bytes().length == 0 ? "NONE" : new String(ctx.body().bytes(), StandardCharsets.UTF_8);
                 synchronized (app) {
                     String msg = String.format(format, took, ip, method, path, params, body);
                     app.getLog().info(msg);

@@ -7,7 +7,7 @@
     <div class="one wide column"></div>
     <div class="four wide column">
         <!-- menu -->
-        <div class="ui vertical inverted black menu">
+        <div class="ui fluid vertical inverted black menu">
             <a id="users" class="item"><h5><i class="chart bar outline icon"></i> Users </h5></a>
             <a id="boards" class="item"><h5><i class="chart bar outline icon"></i> Boards </h5></a>
             <a id="posts" class="item"><h5><i class="chart bar outline icon"></i> Posts </h5></a>
@@ -48,9 +48,14 @@
             </tbody>
         </table>
         <!-- result info -->
-        <div id="searching-successful" class="ui inverted black progress">
-            <div class="bar">
-                <div class="progress"></div>
+        <div class="ui grid">
+            <div class="four wide column"></div>
+            <div class="twelve wide column">
+                <div id="searching-successful" class="ui inverted black progress">
+                    <div class="bar">
+                        <div class="progress"></div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- loading animation -->
@@ -66,12 +71,13 @@
 </div>
 <!-- user detailed info -->
 <div id="user-data" class="ui basic modal">
+    <div id="user-warning" class="ui warning message"></div>
     <div class="content">
         <div class="ui grid">
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
-                    <div class="ui label"> ID (Do Not Modify)</div>
-                    <input id="user-id" type="text">
+                    <div class="ui label"> ID (AUTO-GENERATED)</div>
+                    <input id="user-id" type="number" readonly>
                 </div>
             </div>
             <div class="eight wide column">
@@ -135,12 +141,13 @@
 </div>
 <!-- board detailed info -->
 <div id="board-data" class="ui basic modal">
+    <div id="board-warning" class="ui warning message"></div>
     <div class="content">
         <div class="ui grid">
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
-                    <div class="ui label"> ID (Do Not Modify)</div>
-                    <input id="board-id" type="text">
+                    <div class="ui label"> ID (AUTO-GENERATED)</div>
+                    <input id="board-id" type="number" readonly>
                 </div>
             </div>
             <div class="eight wide column">
@@ -163,24 +170,25 @@
 </div>
 <!-- post detailed info -->
 <div id="post-data" class="ui basic modal">
+    <div id="post-warning" class="ui warning message"></div>
     <div class="content">
         <div class="ui grid">
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
-                    <div class="ui label"> ID (Do Not Modify)</div>
-                    <input id="post-id" type="text">
+                    <div class="ui label"> ID (AUTO-GENERATED)</div>
+                    <input id="post-id" type="number" readonly>
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Linked User ID</div>
-                    <input id="post-id_user" type="text">
+                    <input id="post-id_user" type="number">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Linked Board ID</div>
-                    <input id="post-id_board" type="text">
+                    <input id="post-id_board" type="number">
                 </div>
             </div>
             <div class="eight wide column">
@@ -198,7 +206,7 @@
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Created At</div>
-                    <input id="post-ts_create" type="text">
+                    <input id="post-ts_create" type="text" placeholder="YYYY-MM-DD hh:mm">
                 </div>
             </div>
             <div class="sixteen wide column">
@@ -220,30 +228,31 @@
 </div>
 <!-- comment detailed info -->
 <div id="comment-data" class="ui basic modal">
+    <div id="comment-warning" class="ui warning message"></div>
     <div class="content">
         <div class="ui grid">
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
-                    <div class="ui label"> ID (Do Not Modify)</div>
-                    <input id="comment-id" type="text">
+                    <div class="ui label"> ID (AUTO-GENERATED)</div>
+                    <input id="comment-id" type="number" readonly>
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Linked User ID</div>
-                    <input id="comment-id_user" type="text">
+                    <input id="comment-id_user" type="number">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Linked Post ID</div>
-                    <input id="comment-id_post" type="text">
+                    <input id="comment-id_post" type="number">
                 </div>
             </div>
             <div class="eight wide column">
                 <div class="ui fluid labeled inverted input">
                     <div class="ui label"> Created At</div>
-                    <input id="comment-ts_create" type="text">
+                    <input id="comment-ts_create" type="text" placeholder="YYYY-MM-DD hh:mm">
                 </div>
             </div>
             <div class="sixteen wide column">
