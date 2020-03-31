@@ -1,3 +1,18 @@
+/* api with json */
+function connectAndUpdate(url, verb, request, action) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(verb, url, true);
+    xhr.setRequestHeader("content-type", "application/json;charset=UTF-8");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            var response = JSON.parse(xhr.responseText);
+            console.log(response);
+            action(response);
+        }
+    }
+    xhr.send(JSON.stringify(request));
+}
+
 /* truncate evert input field in div */
 function truncateEveryInputFieldInDiv(id) {
     Array.from(document.getElementById(id).getElementsByTagName("input")).forEach(e => {
@@ -8,7 +23,7 @@ function truncateEveryInputFieldInDiv(id) {
     });
 }
 
-/* check if any input space is empty */
+/* check if any input field is empty */
 function isAnyInputFieldEmptyInDiv(id) {
     var checkedResult = false;
     Array.from(document.getElementById(id).getElementsByTagName("input")).forEach(e => {

@@ -1,5 +1,7 @@
 package der3318;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -14,6 +16,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class UnitTest {
+
+    @BeforeEach
+    public void testSetUp() {
+        MockRouter router = new MockRouter(new ApplicationProgrammingInterfaceVersion1());
+        router.post("/admin/database/reset", new MockContext());
+    }
+
+    @AfterEach
+    public void testCleanUp() {
+        MockRouter router = new MockRouter(new ApplicationProgrammingInterfaceVersion1());
+        router.post("/admin/database/reset", new MockContext());
+    }
 
     @Test
     public void info() {

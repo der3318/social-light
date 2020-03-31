@@ -133,6 +133,7 @@ function popUserInfo(id) {
         document.getElementById("user-delete").style.display = "";
     }
     document.getElementById("user-update").setAttribute("onclick", "createOrUpdateUser(" + id + ")");
+    document.getElementById("user-delete").setAttribute("onclick", "deleteUserRecursively(" + id + ")");
     $("#user-data").modal({onApprove: function() {return false;}}).modal("show");
 }
 
@@ -150,6 +151,7 @@ function popBoardInfo(id) {
         document.getElementById("board-delete").style.display = "";
     }
     document.getElementById("board-update").setAttribute("onclick", "createOrUpdateBoard(" + id + ")");
+    document.getElementById("board-delete").setAttribute("onclick", "deleteBoardRecursively(" + id + ")");
     $("#board-data").modal({onApprove: function() {return false;}}).modal("show");
 }
 
@@ -172,6 +174,7 @@ function popPostInfo(id) {
         document.getElementById("post-delete").style.display = "";
     }
     document.getElementById("post-update").setAttribute("onclick", "createOrUpdatePost(" + id + ")");
+    document.getElementById("post-delete").setAttribute("onclick", "deletePostRecursively(" + id + ")");
     $("#post-data").modal({onApprove: function() {return false;}}).modal("show");
 }
 
@@ -192,6 +195,7 @@ function popCommentInfo(id) {
         document.getElementById("comment-delete").style.display = "";
     }
     document.getElementById("comment-update").setAttribute("onclick", "createOrUpdateComment(" + id + ")");
+    document.getElementById("comment-delete").setAttribute("onclick", "deleteCommentRecursively(" + id + ")");
     $("#comment-data").modal({onApprove: function() {return false;}}).modal("show");
 }
 
@@ -293,6 +297,42 @@ function createOrUpdateComment(id) {
         if (!document.getElementById("keyword").value.trim()) {
             document.getElementById("keyword").value = rsp.id;
         }
+        currentMenu.click();
+    });
+    $("#comment-data").modal("hide");
+}
+
+/* delete user recursively */
+function deleteUserRecursively(id) {
+    showBusySearching(true);
+    connectAndUpdate("/api/v1/admin/user/delete", "POST", {"id": id}, rsp => {
+        currentMenu.click();
+    });
+    $("#user-data").modal("hide");
+}
+
+/* delete board recursively */
+function deleteBoardRecursively(id) {
+    showBusySearching(true);
+    connectAndUpdate("/api/v1/admin/board/delete", "POST", {"id": id}, rsp => {
+        currentMenu.click();
+    });
+    $("#board-data").modal("hide");
+}
+
+/* delete post recursively */
+function deletePostRecursively(id) {
+    showBusySearching(true);
+    connectAndUpdate("/api/v1/admin/post/delete", "POST", {"id": id}, rsp => {
+        currentMenu.click();
+    });
+    $("#post-data").modal("hide");
+}
+
+/* delete comment recursively */
+function deleteCommentRecursively(id) {
+    showBusySearching(true);
+    connectAndUpdate("/api/v1/admin/comment/delete", "POST", {"id": id}, rsp => {
         currentMenu.click();
     });
     $("#comment-data").modal("hide");

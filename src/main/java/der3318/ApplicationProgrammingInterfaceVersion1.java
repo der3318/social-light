@@ -6,8 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.SqlStatements;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -51,6 +54,15 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
 
         /* time pattern */
         Pattern timePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}");
+
+        /* [api] admin database reset */
+        post("/admin/database/reset", ctx -> {
+            jdbi.useHandle(h -> {
+                h.createScript(new String (Files.readAllBytes(Paths.get(new File("sql/CreateTables.sql").getAbsolutePath())), StandardCharsets.UTF_8)).execute();
+                h.createScript(new String (Files.readAllBytes(Paths.get(new File("sql/InitRecords.sql").getAbsolutePath())), StandardCharsets.UTF_8)).execute();
+            });
+            return new JsonResponse(0).body();
+        });
 
         /* [api] info */
         post("/info", ctx -> {
@@ -608,7 +620,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             return rsp.set("id", id).body();
         });
 
-        /* [api] admin update post */
+        /* [api] admin update comment */
         post("/admin/comment/update", ctx -> {
             Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
             JsonResponse rsp = new JsonResponse(0);
@@ -628,6 +640,78 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                 return rsp.set("id", newRecord.get()).body();
             }
             return rsp.set("id", id).body();
+        });
+
+        /* [api] admin delete user */
+        post("/admin/user/delete", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM users WHERE id = :id";
+                h.createUpdate(sql).bind("id", id).execute();
+            });
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM posts WHERE id_user = :id_user";
+                h.createUpdate(sql).bind("id_user", id).execute();
+            });
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM comments WHERE id_user = :id_user";
+                h.createUpdate(sql).bind("id_user", id).execute();
+            });
+            return rsp.body();
+        });
+
+        /* [api] admin delete board */
+        post("/admin/board/delete", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            List<String> records = jdbi.withHandle(h -> {
+                String sql = "SELECT id FROM posts WHERE id_board = :id_board";
+                return h.createQuery(sql).bind("id_board", id).mapTo(String.class).list();
+            });
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM boards WHERE id = :id";
+                h.createUpdate(sql).bind("id", id).execute();
+            });
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM posts WHERE id_board = :id_board";
+                h.createUpdate(sql).bind("id_board", id).execute();
+            });
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM comments WHERE id_post in (<id_post_list>)";
+                h.createUpdate(sql).bindList("id_post_list", records).execute();
+            });
+            return rsp.body();
+        });
+
+        /* [api] admin delete post */
+        post("/admin/post/delete", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM posts WHERE id = :id";
+                h.createUpdate(sql).bind("id", id).execute();
+            });
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM comments WHERE id_post = :id_post";
+                h.createUpdate(sql).bind("id_post", id).execute();
+            });
+            return rsp.body();
+        });
+
+        /* [api] admin delete comment */
+        post("/admin/comment/delete", ctx -> {
+            Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
+            JsonResponse rsp = new JsonResponse(0);
+            Integer id = (Integer) req.getOrDefault("id", Integer.MIN_VALUE);
+            jdbi.useHandle(h -> {
+                String sql = "DELETE FROM comments WHERE id = :id";
+                h.createUpdate(sql).bind("id", id).execute();
+            });
+            return rsp.body();
         });
     }
 
