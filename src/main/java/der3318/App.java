@@ -32,6 +32,7 @@ public class App {
             app.assets("/images/*", "public/images");
             app.assets("/icons/*", "public/icons");
             app.assets("/javascripts/*", "public/javascripts");
+            app.assets("/files/*", "public/files");
 
             /* log info */
             app.decorator(next -> ctx -> {

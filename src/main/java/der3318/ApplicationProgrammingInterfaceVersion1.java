@@ -6,13 +6,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.SqlStatements;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +64,8 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
         /* [api] admin database reset */
         post("/admin/database/reset", ctx -> {
             jdbi.useHandle(h -> {
-                h.createScript(new String (Files.readAllBytes(Paths.get(new File("sql/CreateTables.sql").getAbsolutePath())), StandardCharsets.UTF_8)).execute();
-                h.createScript(new String (Files.readAllBytes(Paths.get(new File("sql/InitRecords.sql").getAbsolutePath())), StandardCharsets.UTF_8)).execute();
+                h.createScript(new String(Files.readAllBytes(Paths.get(new File("sql/CreateTables.sql").getAbsolutePath())), StandardCharsets.UTF_8)).execute();
+                h.createScript(new String(Files.readAllBytes(Paths.get(new File("sql/InitRecords.sql").getAbsolutePath())), StandardCharsets.UTF_8)).execute();
             });
             return new JsonResponse(0).body();
         });
@@ -713,6 +719,58 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             });
             return rsp.body();
         });
+
+        /* [api] admin users dump */
+        post("/admin/users/dump", ctx -> {
+            JsonResponse rsp = new JsonResponse(0);
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                String sql = "SELECT * FROM users ORDER BY id ASC";
+                return h.createQuery(sql).mapToMap().list();
+            });
+            List<String> columnList = Arrays.asList("id", "account", "password", "name", "type", "location", "motto", "intro", "url_avatar", "ts_create");
+            String filename = String.format("public/files/users-%s.csv", System.currentTimeMillis());
+            outputCsvFile(records, columnList, filename);
+            return rsp.set("url", filename.replace("public", "")).body();
+        });
+
+        /* [api] admin boards dump */
+        post("/admin/boards/dump", ctx -> {
+            JsonResponse rsp = new JsonResponse(0);
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                String sql = "SELECT * FROM boards ORDER BY id ASC";
+                return h.createQuery(sql).mapToMap().list();
+            });
+            List<String> columnList = Arrays.asList("id", "name", "ts_create");
+            String filename = String.format("public/files/boards-%s.csv", System.currentTimeMillis());
+            outputCsvFile(records, columnList, filename);
+            return rsp.set("url", filename.replace("public", "")).body();
+        });
+
+        /* [api] admin posts dump */
+        post("/admin/posts/dump", ctx -> {
+            JsonResponse rsp = new JsonResponse(0);
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                String sql = "SELECT * FROM posts ORDER BY id ASC";
+                return h.createQuery(sql).mapToMap().list();
+            });
+            List<String> columnList = Arrays.asList("id", "id_user", "id_board", "title", "content", "url_avatar", "ts_create");
+            String filename = String.format("public/files/posts-%s.csv", System.currentTimeMillis());
+            outputCsvFile(records, columnList, filename);
+            return rsp.set("url", filename.replace("public", "")).body();
+        });
+
+        /* [api] admin comments dump */
+        post("/admin/comments/dump", ctx -> {
+            JsonResponse rsp = new JsonResponse(0);
+            List<Map<String, Object>> records = jdbi.withHandle(h -> {
+                String sql = "SELECT * FROM comments ORDER BY id ASC";
+                return h.createQuery(sql).mapToMap().list();
+            });
+            List<String> columnList = Arrays.asList("id", "id_user", "id_post", "content", "ts_create");
+            String filename = String.format("public/files/comments-%s.csv", System.currentTimeMillis());
+            outputCsvFile(records, columnList, filename);
+            return rsp.set("url", filename.replace("public", "")).body();
+        });
     }
 
     /* response adapter */
@@ -757,5 +815,27 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
         if (matcher.find()) {
             map.put(columnName, matcher.group());
         }
+    }
+
+    /* output csv with big5 encoding */
+    private static void outputCsvFile(List<Map<String, Object>> records, List<String> columnList, String filename) {
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filename), "BIG5")) {
+            for (String columnName : columnList) {
+                if(columnList.indexOf(columnName) == columnList.size() - 1) {
+                    writer.write(String.format("\"%s\"\n", columnName));
+                } else {
+                    writer.write(String.format("\"%s\",", columnName));
+                }
+            }
+            for(Map<String, Object> record : records) {
+                for (String columnName : columnList) {
+                    if(columnList.indexOf(columnName) == columnList.size() - 1) {
+                        writer.write("\"" + record.get(columnName) + "\"\n");
+                    } else {
+                        writer.write("\"" + record.get(columnName) + "\",");
+                    }
+                }
+            }
+        } catch (IOException ignored) {}
     }
 }
