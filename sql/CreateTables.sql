@@ -1,5 +1,5 @@
-drop table IF EXISTS users;
-create TABLE users (
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
 	"account"			VARCHAR(255),
 	"password"			VARCHAR(255),
@@ -12,15 +12,15 @@ create TABLE users (
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-drop table IF EXISTS boards;
-create TABLE boards (
+DROP TABLE IF EXISTS boards;
+CREATE TABLE boards (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
 	"name"				VARCHAR(255),
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-drop table IF EXISTS posts;
-create TABLE posts (
+DROP TABLE IF EXISTS posts;
+CREATE TABLE posts (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_user"			INTEGER,
 	"id_board"			INTEGER,
@@ -30,8 +30,8 @@ create TABLE posts (
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-drop table IF EXISTS comments;
-create TABLE comments (
+DROP TABLE IF EXISTS comments;
+CREATE TABLE comments (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_user"			INTEGER,
 	"id_post"			INTEGER,
@@ -39,8 +39,8 @@ create TABLE comments (
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-drop table IF EXISTS chatrooms;
-create TABLE chatrooms (
+DROP TABLE IF EXISTS chatrooms;
+CREATE TABLE chatrooms (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_user"			INTEGER,
 	"id_user_target"	INTEGER,
@@ -49,7 +49,7 @@ create TABLE chatrooms (
 	"ts_create"			DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-drop table IF EXISTS messages;
+DROP TABLE IF EXISTS messages;
 create TABLE messages (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_chatroom"		INTEGER,

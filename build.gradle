@@ -18,11 +18,11 @@ buildscript {
         classpath "com.github.jengelman.gradle.plugins:shadow:5.1.0"
     }
 }
+
 apply plugin: "io.spring.dependency-management"
 apply plugin: "com.google.osdetector"
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "application"
-
 apply plugin: "jooby"
 apply plugin: "jacoco"
 
@@ -31,6 +31,7 @@ version "1.0.0"
 mainClassName = "der3318.App"
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
+
 /** utf-8 encoding */
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
@@ -52,7 +53,7 @@ dependencies {
     compile "io.jooby:jooby-pebble:2.6.1"
 
     /** database interface */
-    compile 'io.jooby:jooby-hikari:2.6.1'
+    compile "io.jooby:jooby-hikari:2.6.1"
     compile "io.jooby:jooby-jdbi:2.6.1"
 
     /** database dependency */
@@ -77,7 +78,7 @@ test {
 
 /** Java debug information: */
 tasks.withType(JavaCompile) {
-    options.compilerArgs << '-parameters'
+    options.compilerArgs << "-parameters"
     options.debug = true
 }
 

@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.SqlStatements;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
@@ -821,21 +819,22 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
     private static void outputCsvFile(List<Map<String, Object>> records, List<String> columnList, String filename) {
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filename), "BIG5")) {
             for (String columnName : columnList) {
-                if(columnList.indexOf(columnName) == columnList.size() - 1) {
+                if (columnList.indexOf(columnName) == columnList.size() - 1) {
                     writer.write(String.format("\"%s\"\n", columnName));
                 } else {
                     writer.write(String.format("\"%s\",", columnName));
                 }
             }
-            for(Map<String, Object> record : records) {
+            for (Map<String, Object> record : records) {
                 for (String columnName : columnList) {
-                    if(columnList.indexOf(columnName) == columnList.size() - 1) {
+                    if (columnList.indexOf(columnName) == columnList.size() - 1) {
                         writer.write("\"" + record.get(columnName) + "\"\n");
                     } else {
                         writer.write("\"" + record.get(columnName) + "\",");
                     }
                 }
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 }

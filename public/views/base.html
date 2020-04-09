@@ -21,9 +21,15 @@
 
 <!-- navigation bar -->
 <div id="navigation" class="ui inverted black menu">
-    <a class="ui item" href="/"><h5><i class="home icon"></i> Social Light </h5></a>
+    <a class="ui item" href="">
+        <h5>
+            <img class="ui avatar image" src="/icons/cloud-storm.svg" style="filter:invert(100%)"/>
+            <span> Social Light </span>
+        </h5>
+    </a>
+    {% block menu %}{% endblock %}
     <div class="right inverted menu">
-        <a class="ui item" href="/"><h5><i class="user icon"></i> Login </h5></a>
+        {% block user %}{% endblock %}
     </div>
 </div>
 

@@ -13,6 +13,17 @@ function connectAndUpdate(url, verb, request, action) {
     xhr.send(JSON.stringify(request));
 }
 
+/* trigger download */
+function triggerDownload(filename, link) {
+    var element = document.createElement("a");
+    element.setAttribute("href", link);
+    element.setAttribute("download", filename);
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
 /* truncate evert input field in div */
 function truncateEveryInputFieldInDiv(id) {
     Array.from(document.getElementById(id).getElementsByTagName("input")).forEach(e => {

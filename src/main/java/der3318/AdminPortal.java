@@ -1,20 +1,22 @@
 package der3318;
 
-import org.jdbi.v3.core.Jdbi;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import io.jooby.Jooby;
 import io.jooby.ModelAndView;
-import io.jooby.hikari.HikariModule;
-import io.jooby.jdbi.JdbiModule;
 
 public class AdminPortal extends Jooby {
     {
-        /* database interface */
-        install(new HikariModule());
-        install(new JdbiModule());
-        Jdbi jdbi = require(Jdbi.class);
-
         /* admin page */
-        get("/", ctx -> new ModelAndView("admin.html"));
+        get("/", ctx -> {
+            Map<String, List<String>> queryMap = ctx.queryMultimap();
+            List<String> tokenList = queryMap.getOrDefault("token", Arrays.asList());
+            if (tokenList.contains(getEnvironment().getConfig().getString("admin.token"))) {
+                return new ModelAndView("admin.html");
+            }
+            return new ModelAndView("base.html");
+        });
     }
 }

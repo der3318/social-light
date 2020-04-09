@@ -2,6 +2,24 @@
 
 {% block title %}Admin Portal{% endblock %}
 
+{% block menu %}
+<a class="ui item" href="">
+    <h5>
+        <img class="ui avatar image" src="/icons/dashboard.svg" style="filter:invert(100%)"/>
+        <span> DashBoard Portal </span>
+    </h5>
+</a>
+{% endblock %}
+
+{% block user %}
+<a class="ui item" href="">
+    <h5>
+        <img class="ui avatar image" src="/icons/lock.svg" style="filter:invert(100%)"/>
+        <span> Admin </span>
+    </h5>
+</a>
+{% endblock %}
+
 {% block content %}
 <div class="ui grid">
     <div class="one wide column"></div>
@@ -24,7 +42,7 @@
         <!-- additional functions -->
         <div class="ui grid">
             <div class="eight wide column">
-                <button class="ui fluid basic inverted button">
+                <button id="export" class="ui fluid basic inverted button">
                     <i class="file excel outline icon"></i> Export Database
                 </button>
             </div>

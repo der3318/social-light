@@ -338,6 +338,42 @@ function deleteCommentRecursively(id) {
     $("#comment-data").modal("hide");
 }
 
+/* dump users to csv */
+function dumpUsers() {
+    showBusySearching(false);
+    connectAndUpdate("/api/v1/admin/users/dump", "POST", {}, rsp => {
+        triggerDownload("users.csv", rsp.url);
+        dismissBusySearching();
+    });
+}
+
+/* dump boards to csv */
+function dumpBoards() {
+    showBusySearching(false);
+    connectAndUpdate("/api/v1/admin/boards/dump", "POST", {}, rsp => {
+        triggerDownload("boards.csv", rsp.url);
+        dismissBusySearching();
+    });
+}
+
+/* dump posts to csv */
+function dumpPosts() {
+    showBusySearching(false);
+    connectAndUpdate("/api/v1/admin/posts/dump", "POST", {}, rsp => {
+        triggerDownload("posts.csv", rsp.url);
+        dismissBusySearching();
+    });
+}
+
+/* dump comments to csv */
+function dumpComments() {
+    showBusySearching(false);
+    connectAndUpdate("/api/v1/admin/comments/dump", "POST", {}, rsp => {
+        triggerDownload("comments.csv", rsp.url);
+        dismissBusySearching();
+    });
+}
+
 /* document ready */
 document.addEventListener("DOMContentLoaded", function(){
     /* onclick listeners */
@@ -346,6 +382,7 @@ document.addEventListener("DOMContentLoaded", function(){
         currentMenu.className = "item";
         currentMenu = this;
         currentMenu.className = "active item";
+        document.getElementById("export").setAttribute("onclick", "dumpUsers()");
         document.getElementById("new").setAttribute("onclick", "popUserInfo(-1)");
         setTimeout(function(){ viewUsers(document.getElementById("keyword").value.trim()); }, 1000);
     });
@@ -354,6 +391,7 @@ document.addEventListener("DOMContentLoaded", function(){
         currentMenu.className = "item";
         currentMenu = this;
         currentMenu.className = "active item";
+        document.getElementById("export").setAttribute("onclick", "dumpBoards()");
         document.getElementById("new").setAttribute("onclick", "popBoardInfo(-1)");
         setTimeout(function(){ viewBoards(document.getElementById("keyword").value.trim()); }, 1000);
     });
@@ -362,6 +400,7 @@ document.addEventListener("DOMContentLoaded", function(){
         currentMenu.className = "item";
         currentMenu = this;
         currentMenu.className = "active item";
+        document.getElementById("export").setAttribute("onclick", "dumpPosts()");
         document.getElementById("new").setAttribute("onclick", "popPostInfo(-1)");
         setTimeout(function(){ viewPosts(document.getElementById("keyword").value.trim()); }, 1000);
     });
@@ -370,6 +409,7 @@ document.addEventListener("DOMContentLoaded", function(){
         currentMenu.className = "item";
         currentMenu = this;
         currentMenu.className = "active item";
+        document.getElementById("export").setAttribute("onclick", "dumpComments()");
         document.getElementById("new").setAttribute("onclick", "popCommentInfo(-1)");
         setTimeout(function(){ viewComments(document.getElementById("keyword").value.trim()); }, 1000);
     });
@@ -378,6 +418,5 @@ document.addEventListener("DOMContentLoaded", function(){
     });
     /* default */
     currentMenu = document.getElementById("users");
-    showBusySearching(false);
     currentMenu.click();
 });
