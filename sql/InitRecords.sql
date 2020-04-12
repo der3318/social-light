@@ -9,13 +9,13 @@ INSERT INTO boards (name) VALUES ("分類看板一");
 INSERT INTO boards (name) VALUES ("分類看板二");
 
 INSERT INTO posts (id_user, id_board, title, content, url_avatar)
-VALUES (1, 1, "文章標題一", "內文，標點，第一篇", "post1.jpg");
+VALUES (1, -1, "文章標題一", "內文，標點，第一篇", "post1.jpg");
 INSERT INTO posts (id_user, id_board, title, content, url_avatar)
 VALUES (1, 1, "文章標題二", "內文，標點，第二篇", "post2.jpg");
 INSERT INTO posts (id_user, id_board, title, content, url_avatar)
 VALUES (2, 1, "文章標題三", "內文，標點，第三篇", "post3.jpg");
 INSERT INTO posts (id_user, id_board, title, content, url_avatar)
-VALUES (2, 2, "文章標題四", "內文，標點，第四篇", "post4.jpg");
+VALUES (2, -1, "文章標題四", "內文，標點，第四篇", "post4.jpg");
 INSERT INTO posts (id_user, id_board, title, content, url_avatar)
 VALUES (3, 2, "文章標題五", "內文，標點，第五篇", "post5.jpg");
 INSERT INTO posts (id_user, id_board, title, content, url_avatar)

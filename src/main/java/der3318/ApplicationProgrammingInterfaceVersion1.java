@@ -199,7 +199,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             if (boardID != -1 && !boardRecord.isPresent()) {
                 return rsp.set("code", -2).body();
             }
-            if (title.isEmpty() || content.isEmpty() || avatar.isEmpty()) {
+            if (title.trim().isEmpty() || content.trim().isEmpty() || avatar.trim().isEmpty()) {
                 return rsp.set("code", -3).body();
             }
             if (!tokens.containsKey(userID) || !tokens.get(userID).equals(token)) {
