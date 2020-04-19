@@ -50,7 +50,7 @@ CREATE TABLE chatrooms (
 );
 
 DROP TABLE IF EXISTS messages;
-create TABLE messages (
+CREATE TABLE messages (
 	"id"				INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_chatroom"		INTEGER,
 	"status"			INTEGER,

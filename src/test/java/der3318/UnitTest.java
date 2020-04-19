@@ -30,12 +30,14 @@ public class UnitTest {
 
     @BeforeEach
     public void methodSetUp() {
-        router.post("/admin/database/reset", new MockContext());
+        HashMap response = router.post("/admin/database/reset", new MockContext()).value(HashMap.class);
+        assumeTrue(0 == ((Integer) response.get("code")));
     }
 
     @AfterEach
     public void methodCleanUp() {
-        router.post("/admin/database/reset", new MockContext());
+        HashMap response = router.post("/admin/database/reset", new MockContext()).value(HashMap.class);
+        assumeTrue(0 == ((Integer) response.get("code")));
     }
 
     @Test
@@ -289,6 +291,326 @@ public class UnitTest {
         HashMap response4 = router.post("/post/update", context4).value(HashMap.class);
         assertEquals(-4, response4.get("code"));
         assertEquals(1, response4.size());
+    }
+
+    @Test
+    public void getPostInfoAndRelatedCommentsSucceeded() {
+        MockContext context = new MockContext().setBody("{\"id\":1}");
+        HashMap response = router.post("/post", context).value(HashMap.class);
+        assertEquals(0, response.get("code"));
+        assertEquals(1, response.get("id_user"));
+        assertEquals(-1, response.get("id_board"));
+        assertEquals("文章標題一", response.get("title"));
+        assertEquals("內文，標點，第一篇", response.get("content"));
+        assertEquals("post1.jpg", response.get("url_avatar"));
+        assertEquals(0, ((String) response.get("ts_create")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+        List<Map<String, Object>> commentList = (List<Map<String, Object>>) response.get("comments");
+        assertEquals(1, commentList.size());
+        assertEquals(1, commentList.get(0).get("id"));
+        assertEquals(1, commentList.get(0).get("id_user"));
+        assertEquals("文章留言一", commentList.get(0).get("content"));
+        assertEquals(0, ((String) commentList.get(0).get("ts_create")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+    }
+
+    @Test
+    public void getPostInfoAndRelatedCommentsFailed() {
+        MockContext context = new MockContext().setBody("{\"id\":0}");
+        HashMap response = router.post("/post", context).value(HashMap.class);
+        assertEquals(-1, response.get("code"));
+        assertEquals(1, response.size());
+    }
+
+    @Test
+    public void publishOrUpdateCommentSucceeded() throws InterruptedException {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* publish */
+        Thread.sleep(1000);
+        MockContext context1 = new MockContext().setBody(String.format("{\"token\":\"%s\",\"id_user\":1,\"id_post\":1,\"content\":\"☑\"}", token));
+        HashMap response1 = router.post("/comment/update", context1).value(HashMap.class);
+        assertEquals(0, response1.get("code"));
+        assertEquals(10, response1.get("id"));
+        /* verify info */
+        MockContext infoContext = new MockContext().setBody("{\"id\":1}");
+        HashMap info = router.post("/post", infoContext).value(HashMap.class);
+        assumeTrue(8 == info.size());
+        List<Map<String, Object>> commentList = (List<Map<String, Object>>) info.get("comments");
+        assertEquals(10, commentList.get(1).get("id"));
+        assertEquals(1, commentList.get(1).get("id_user"));
+        assertEquals("☑", commentList.get(1).get("content"));
+        /* update */
+        MockContext context2 = new MockContext().setBody(String.format("{\"id\":10,\"token\":\"%s\",\"id_user\":1,\"id_post\":2,\"content\":\"☑☑\"}", token));
+        HashMap response2 = router.post("/comment/update", context2).value(HashMap.class);
+        assertEquals(0, response2.get("code"));
+        assertEquals(10, response2.get("id"));
+        /* verify new info */
+        MockContext newInfoContext = new MockContext().setBody("{\"id\":2}");
+        HashMap newInfo = router.post("/post", newInfoContext).value(HashMap.class);
+        assumeTrue(8 == newInfo.size());
+        List<Map<String, Object>> newCommentList = (List<Map<String, Object>>) newInfo.get("comments");
+        assertEquals(10, newCommentList.get(2).get("id"));
+        assertEquals(1, newCommentList.get(2).get("id_user"));
+        assertEquals("☑☑", newCommentList.get(2).get("content"));
+    }
+
+    @Test
+    public void publishOrUpdateCommentFailed() {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* different status code */
+        MockContext context1 = new MockContext().setBody(String.format("{\"token\":\"%s\",\"id_user\":0,\"id_post\":1,\"content\":\"☑\"}", token));
+        HashMap response1 = router.post("/comment/update", context1).value(HashMap.class);
+        assertEquals(-1, response1.get("code"));
+        assertEquals(1, response1.size());
+        MockContext context2 = new MockContext().setBody(String.format("{\"token\":\"%s\",\"id_user\":1,\"id_post\":0,\"content\":\"☑\"}", token));
+        HashMap response2 = router.post("/comment/update", context2).value(HashMap.class);
+        assertEquals(-2, response2.get("code"));
+        assertEquals(1, response2.size());
+        MockContext context3 = new MockContext().setBody(String.format("{\"token\":\"%s\",\"id_user\":1,\"id_post\":1,\"content\":\" \"}", token));
+        HashMap response3 = router.post("/comment/update", context3).value(HashMap.class);
+        assertEquals(-3, response3.get("code"));
+        assertEquals(1, response3.size());
+        MockContext context4 = new MockContext().setBody(String.format("{\"token\":\"%s\",\"id_user\":2,\"id_post\":1,\"content\":\"☑\"}", token));
+        HashMap response4 = router.post("/comment/update", context4).value(HashMap.class);
+        assertEquals(-4, response4.get("code"));
+        assertEquals(1, response4.size());
+    }
+
+    @Test
+    public void getChatroomsOfUserSucceeded() {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* verify info */
+        MockContext context = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\"}", token));
+        HashMap response = router.post("/chatrooms", context).value(HashMap.class);
+        assertEquals(0, response.get("code"));
+        List<Map<String, Object>> chatroomList = (List<Map<String, Object>>) response.get("chatrooms");
+        assertEquals(1, chatroomList.size());
+        assertEquals(1, chatroomList.get(0).get("id"));
+        assertEquals(2, chatroomList.get(0).get("id_user_target"));
+        assertEquals("測試使用者二號", chatroomList.get(0).get("name"));
+        assertEquals("user2.png", chatroomList.get(0).get("url_avatar"));
+        assertEquals(2, chatroomList.get(0).get("lastmsg_status"));
+        assertEquals("訊息測試", chatroomList.get(0).get("lastmsg_content"));
+        assertEquals(0, ((String) chatroomList.get(0).get("lastmsg_ts")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+    }
+
+    @Test
+    public void getChatroomsOfUserFailed() {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* different status code */
+        MockContext context1 = new MockContext().setBody(String.format("{\"id\":0,\"token\":\"%s\"}", token));
+        HashMap response1 = router.post("/chatrooms", context1).value(HashMap.class);
+        assertEquals(-1, response1.get("code"));
+        assertEquals(1, response1.size());
+        MockContext context2 = new MockContext().setBody(String.format("{\"id\":2,\"token\":\"%s\"}", token));
+        HashMap response2 = router.post("/chatrooms", context2).value(HashMap.class);
+        assertEquals(-2, response2.get("code"));
+        assertEquals(1, response2.size());
+    }
+
+    @Test
+    public void updateChatroomSucceeded() {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* update */
+        MockContext context = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\",\"id_user\":1,\"name\":\"☑\",\"url_avatar\":\"chatroom.jpg\"}", token));
+        HashMap response = router.post("/chatroom/update", context).value(HashMap.class);
+        assertEquals(0, response.get("code"));
+        /* verify new info */
+        MockContext newInfoContext = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\"}", token));
+        HashMap newInfo = router.post("/chatrooms", newInfoContext).value(HashMap.class);
+        assumeTrue(2 == newInfo.size());
+        List<Map<String, Object>> newChatroomList = (List<Map<String, Object>>) newInfo.get("chatrooms");
+        assertEquals(1, newChatroomList.get(0).get("id"));
+        assertEquals(2, newChatroomList.get(0).get("id_user_target"));
+        assertEquals("☑", newChatroomList.get(0).get("name"));
+        assertEquals("chatroom.jpg", newChatroomList.get(0).get("url_avatar"));
+        assertEquals(2, newChatroomList.get(0).get("lastmsg_status"));
+        assertEquals("訊息測試", newChatroomList.get(0).get("lastmsg_content"));
+        assertEquals(0, ((String) newChatroomList.get(0).get("lastmsg_ts")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+    }
+
+    @Test
+    public void updateChatroomFailed() {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* different status code */
+        MockContext context1 = new MockContext().setBody(String.format("{\"id\":0,\"token\":\"%s\",\"id_user\":1,\"name\":\"☑\",\"url_avatar\":\"chatroom.jpg\"}", token));
+        HashMap response1 = router.post("/chatroom/update", context1).value(HashMap.class);
+        assertEquals(-1, response1.get("code"));
+        assertEquals(1, response1.size());
+        MockContext context2 = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\",\"id_user\":0,\"name\":\"☑\",\"url_avatar\":\"chatroom.jpg\"}", token));
+        HashMap response2 = router.post("/chatroom/update", context2).value(HashMap.class);
+        assertEquals(-2, response2.get("code"));
+        assertEquals(1, response2.size());
+        MockContext context3 = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\",\"id_user\":2,\"name\":\"☑\",\"url_avatar\":\"chatroom.jpg\"}", token));
+        HashMap response3 = router.post("/chatroom/update", context3).value(HashMap.class);
+        assertEquals(-3, response3.get("code"));
+        assertEquals(1, response3.size());
+    }
+
+    @Test
+    public void getMessagesBetweenUsersSucceeded() {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account2\",\"password\":\"password2\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* verify info */
+        MockContext context = new MockContext().setBody(String.format("{\"id\":2,\"token\":\"%s\",\"id_user_target\":1}", token));
+        HashMap response = router.post("/messages", context).value(HashMap.class);
+        assertEquals(0, response.get("code"));
+        assertEquals(2, response.get("id_chatroom"));
+        assertEquals("測試使用者一號", response.get("name"));
+        assertEquals("user1.png", response.get("url_avatar"));
+        List<Map<String, Object>> messageList = (List<Map<String, Object>>) response.get("messages");
+        assertEquals(1, messageList.size());
+        assertEquals(1, messageList.get(0).get("status"));
+        assertEquals("訊息測試", messageList.get(0).get("content"));
+        assertEquals(0, ((String) messageList.get(0).get("ts_create")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+    }
+
+    @Test
+    public void getMessagesBetweenUsersFailed() {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* different status code */
+        MockContext context1 = new MockContext().setBody(String.format("{\"id\":0,\"token\":\"%s\",\"id_user_target\":2}", token));
+        HashMap response1 = router.post("/messages", context1).value(HashMap.class);
+        assertEquals(-1, response1.get("code"));
+        assertEquals(1, response1.size());
+        MockContext context2 = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\",\"id_user_target\":3}", token));
+        HashMap response2 = router.post("/messages", context2).value(HashMap.class);
+        assertEquals(-2, response2.get("code"));
+        assertEquals(1, response2.size());
+        MockContext context3 = new MockContext().setBody(String.format("{\"id\":2,\"token\":\"%s\",\"id_user_target\":1}", token));
+        HashMap response3 = router.post("/messages", context3).value(HashMap.class);
+        assertEquals(-3, response3.get("code"));
+        assertEquals(1, response3.size());
+    }
+
+    @Test
+    public void sendMessageSucceeded() throws InterruptedException {
+        /* login */
+        MockContext loginContext1 = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse1 = router.post("/login", loginContext1).value(HashMap.class);
+        String token1 = (String) loginResponse1.get("token");
+        assumeTrue(null != token1);
+        MockContext loginContext2 = new MockContext().setBody("{\"account\":\"account2\",\"password\":\"password2\"}");
+        HashMap loginResponse2 = router.post("/login", loginContext2).value(HashMap.class);
+        String token2 = (String) loginResponse2.get("token");
+        assumeTrue(null != token2);
+        MockContext loginContext3 = new MockContext().setBody("{\"account\":\"account3\",\"password\":\"password3\"}");
+        HashMap loginResponse3 = router.post("/login", loginContext3).value(HashMap.class);
+        String token3 = (String) loginResponse3.get("token");
+        assumeTrue(null != token2);
+        /* send message to existed room */
+        Thread.sleep(1000);
+        MockContext context = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\",\"id_user_target\":2,\"content\":\"繼續對話\"}", token1));
+        HashMap response = router.post("/message/update", context).value(HashMap.class);
+        assertEquals(0, response.get("code"));
+        /* verify info from sender */
+        MockContext infoContext1 = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\"}", token1));
+        HashMap info1 = router.post("/chatrooms", infoContext1).value(HashMap.class);
+        assumeTrue(2 == info1.size());
+        List<Map<String, Object>> chatroomList1 = (List<Map<String, Object>>) info1.get("chatrooms");
+        assertEquals(1, chatroomList1.size());
+        assertEquals(1, chatroomList1.get(0).get("id"));
+        assertEquals(2, chatroomList1.get(0).get("id_user_target"));
+        assertEquals("測試使用者二號", chatroomList1.get(0).get("name"));
+        assertEquals("user2.png", chatroomList1.get(0).get("url_avatar"));
+        assertEquals(2, chatroomList1.get(0).get("lastmsg_status"));
+        assertEquals("繼續對話", chatroomList1.get(0).get("lastmsg_content"));
+        assertEquals(0, ((String) chatroomList1.get(0).get("lastmsg_ts")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+        /* verify info from receiver */
+        MockContext infoContext2 = new MockContext().setBody(String.format("{\"id\":2,\"token\":\"%s\"}", token2));
+        HashMap info2 = router.post("/chatrooms", infoContext2).value(HashMap.class);
+        assumeTrue(2 == info2.size());
+        List<Map<String, Object>> chatroomList2 = (List<Map<String, Object>>) info2.get("chatrooms");
+        assertEquals(1, chatroomList2.size());
+        assertEquals(2, chatroomList2.get(0).get("id"));
+        assertEquals(1, chatroomList2.get(0).get("id_user_target"));
+        assertEquals("測試使用者一號", chatroomList2.get(0).get("name"));
+        assertEquals("user1.png", chatroomList2.get(0).get("url_avatar"));
+        assertEquals(0, chatroomList2.get(0).get("lastmsg_status"));
+        assertEquals("繼續對話", chatroomList2.get(0).get("lastmsg_content"));
+        assertEquals(0, ((String) chatroomList2.get(0).get("lastmsg_ts")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+        /* send message to new room */
+        Thread.sleep(1000);
+        MockContext newContext = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\",\"id_user_target\":3,\"content\":\"開始聊天\"}", token1));
+        HashMap newResponse = router.post("/message/update", newContext).value(HashMap.class);
+        assertEquals(0, newResponse.get("code"));
+        /* verify new info from sender */
+        MockContext newInfoContext1 = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\"}", token1));
+        HashMap newInfo1 = router.post("/chatrooms", newInfoContext1).value(HashMap.class);
+        assumeTrue(2 == newInfo1.size());
+        List<Map<String, Object>> newChatroomList1 = (List<Map<String, Object>>) newInfo1.get("chatrooms");
+        assertEquals(2, newChatroomList1.size());
+        assertEquals(3, newChatroomList1.get(0).get("id"));
+        assertEquals(3, newChatroomList1.get(0).get("id_user_target"));
+        assertEquals("測試使用者三號", newChatroomList1.get(0).get("name"));
+        assertEquals("user3.png", newChatroomList1.get(0).get("url_avatar"));
+        assertEquals(2, newChatroomList1.get(0).get("lastmsg_status"));
+        assertEquals("開始聊天", newChatroomList1.get(0).get("lastmsg_content"));
+        assertEquals(0, ((String) newChatroomList1.get(0).get("lastmsg_ts")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+        /* verify new info from receiver */
+        MockContext newInfoContext2 = new MockContext().setBody(String.format("{\"id\":3,\"token\":\"%s\"}", token3));
+        HashMap newInfo2 = router.post("/chatrooms", newInfoContext2).value(HashMap.class);
+        assumeTrue(2 == newInfo2.size());
+        List<Map<String, Object>> newChatroomList2 = (List<Map<String, Object>>) newInfo2.get("chatrooms");
+        assertEquals(1, newChatroomList2.size());
+        assertEquals(4, newChatroomList2.get(0).get("id"));
+        assertEquals(1, newChatroomList2.get(0).get("id_user_target"));
+        assertEquals("測試使用者一號", newChatroomList2.get(0).get("name"));
+        assertEquals("user1.png", newChatroomList2.get(0).get("url_avatar"));
+        assertEquals(0, newChatroomList2.get(0).get("lastmsg_status"));
+        assertEquals("開始聊天", newChatroomList2.get(0).get("lastmsg_content"));
+        assertEquals(0, ((String) newChatroomList2.get(0).get("lastmsg_ts")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+    }
+
+    @Test
+    public void sendMessageFailed() {
+        /* login */
+        MockContext loginContext = new MockContext().setBody("{\"account\":\"account1\",\"password\":\"password1\"}");
+        HashMap loginResponse = router.post("/login", loginContext).value(HashMap.class);
+        String token = (String) loginResponse.get("token");
+        assumeTrue(null != token);
+        /* different status code */
+        MockContext context1 = new MockContext().setBody(String.format("{\"id\":1,\"token\":\"%s\",\"id_user_target\":0,\"content\":\"繼續對話\"}", token));
+        HashMap response1 = router.post("/message/update", context1).value(HashMap.class);
+        assertEquals(-1, response1.get("code"));
+        assertEquals(1, response1.size());
+        MockContext context2 = new MockContext().setBody(String.format("{\"id\":0,\"token\":\"%s\",\"id_user_target\":2,\"content\":\"繼續對話\"}", token));
+        HashMap response2 = router.post("/message/update", context2).value(HashMap.class);
+        assertEquals(-1, response2.get("code"));
+        assertEquals(1, response2.size());
+        MockContext context3 = new MockContext().setBody(String.format("{\"id\":2,\"token\":\"%s\",\"id_user_target\":1,\"content\":\"繼續對話\"}", token));
+        HashMap response3 = router.post("/message/update", context3).value(HashMap.class);
+        assertEquals(-2, response3.get("code"));
+        assertEquals(1, response3.size());
     }
 
 }

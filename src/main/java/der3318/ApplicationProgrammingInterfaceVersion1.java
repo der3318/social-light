@@ -246,7 +246,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             return rsp.set(post).set("comments", records).body();
         });
 
-        /* publish or update a comment */
+        /* publish or update comment */
         post("/comment/update", ctx -> {
             Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
             JsonResponse rsp = new JsonResponse(0);
@@ -269,7 +269,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             if (!postRecord.isPresent()) {
                 return rsp.set("code", -2).body();
             }
-            if (content.isEmpty()) {
+            if (content.trim().isEmpty()) {
                 return rsp.set("code", -3).body();
             }
             if (!tokens.containsKey(userID) || !tokens.get(userID).equals(token)) {
@@ -292,7 +292,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             return rsp.set("id", id).body();
         });
 
-        /* [api] get chatrooms of a user */
+        /* [api] get chatrooms of user */
         post("/chatrooms", ctx -> {
             Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
             JsonResponse rsp = new JsonResponse(0);
@@ -326,7 +326,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             return rsp.set("chatrooms", records).body();
         });
 
-        /* [api] update a chatroom */
+        /* [api] update chatroom */
         post("/chatroom/update", ctx -> {
             Map<String, Object> req = mapper.readValue(ctx.body().value(), mapRef);
             JsonResponse rsp = new JsonResponse(0);
@@ -385,8 +385,12 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             }
             Map<String, Object> chatroom = chatroomRecord.get();
             rsp.set(chatroom);
+            jdbi.useHandle(h -> {
+                String sql = "UPDATE messages SET status = 1 WHERE id_chatroom = :id_chatroom AND status = 0";
+                h.createUpdate(sql).bind("id_chatroom", chatroom.get("id_chatroom")).execute();
+            });
             List<Map<String, Object>> records = jdbi.withHandle(h -> {
-                String sql = "SELECT status, content, ts_create FROM messages WHERE id_chatroom = :id_chatroom ORDER BY ts_create DESC LIMIT 100";
+                String sql = "SELECT status, content, ts_create FROM messages WHERE id_chatroom = :id_chatroom ORDER BY ts_create ASC LIMIT 100";
                 return h.createQuery(sql).bind("id_chatroom", chatroom.get("id_chatroom")).mapToMap().list();
             });
             for (Map<String, Object> r : records) {
@@ -464,7 +468,7 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
             }).get();
             rsp.set(chatroom);
             List<Map<String, Object>> records = jdbi.withHandle(h -> {
-                String sql = "SELECT status, content, ts_create FROM messages WHERE id_chatroom = :id_chatroom ORDER BY ts_create DESC LIMIT 100";
+                String sql = "SELECT status, content, ts_create FROM messages WHERE id_chatroom = :id_chatroom ORDER BY ts_create ASC LIMIT 100";
                 return h.createQuery(sql).bind("id_chatroom", chatroom.get("id_chatroom")).mapToMap().list();
             });
             for (Map<String, Object> r : records) {

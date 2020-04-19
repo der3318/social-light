@@ -27,9 +27,9 @@ INSERT INTO comments (id_user, id_post, content) VALUES (1, 3, "文章留言三"
 INSERT INTO comments (id_user, id_post, content) VALUES (2, 4, "文章留言四");
 INSERT INTO comments (id_user, id_post, content) VALUES (2, 5, "文章留言五");
 INSERT INTO comments (id_user, id_post, content) VALUES (2, 6, "文章留言六");
-INSERT INTO comments (id_user, id_post, content) VALUES (3, 1, "文章留言七");
-INSERT INTO comments (id_user, id_post, content) VALUES (3, 3, "文章留言八");
-INSERT INTO comments (id_user, id_post, content) VALUES (3, 5, "文章留言九");
+INSERT INTO comments (id_user, id_post, content) VALUES (3, 2, "文章留言七");
+INSERT INTO comments (id_user, id_post, content) VALUES (3, 4, "文章留言八");
+INSERT INTO comments (id_user, id_post, content) VALUES (3, 6, "文章留言九");
 
 INSERT INTO chatrooms (id_user, id_user_target, name, url_avatar)
 VALUES (1, 2, "測試使用者二號", "user2.png");

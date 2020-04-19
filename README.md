@@ -1,15 +1,11 @@
-## Happy Patient
-### Server Configuration
-|域名|IPv4 位址|虛擬核心數目|記憶體大小|實體位置|
-|:-:|:-:|:-:|:-:|:-:|
-|azure.der3318.nctu.me|23.102.71.144|2|16 GB|Japan East|
-
-
+## Project Social Light
 ### Database
 #### Sqlite
-* 單個檔案
-* 搬遷、編輯容易，適合測試階段及小型專案
-* 圖形介面下載 [官方連結](https://sqlitebrowser.org/dl/)
+|Settings		|Value					|
+|:-:			|:-:					|
+|Filename		|sqlite3.db				|
+|Official Interface	|https://sqlitebrowser.org/dl/		|
+|Recommended Interface	|https://github.com/plotly/falcon	|
 
 
 #### Tables
@@ -62,7 +58,7 @@
 #### 0 - About
 |URL 前綴|版本|最後修改日期|
 |:-:|:-:|:-:|
-|[DOMAIN]/api/v1|Version 1|2020 Febuary 24th|
+|[DOMAIN]/api/v1|Version 1|2020 April 19th|
 
 
 #### 1 - Login
@@ -116,7 +112,7 @@
 |intro|String|code 為零時存在，即對象使用者的自介|
 |url_avatar|String|code 為零時存在，即對象使用者的頭像圖片網址|
 
-範例－`{"code":0, "account":"temp", "name":"有錢人", ..., "url_avatar":"https://imgur/user.png"}`
+範例－`{"code":0, "account":"temp", "name":"暱稱", ..., "url_avatar":"https://imgur/user.png"}`
 
 
 #### 3 - Update User Information
@@ -138,7 +134,7 @@
 |intro|String|若有，則嘗試將其設為新的自介||
 |url_avatar|String|若有，則嘗試將其設為新的頭像圖片網址||
 
-範例－`{"token":"mqspoq5fc", "id":202, "type":"肺癌末期病患", "motto":"明天就好了"}`
+範例－`{"token":"mqspoq5fc", "id":202, "type":"新分類", "motto":"新座右銘"}`
 
 
 ##### Returned Content
@@ -167,7 +163,7 @@ None
 |boards[index].id|Integer|看板 ID，可用於查詢看版下的文章|
 |boards[index].name|String|即看板名字|
 
-範例－`{"code":0, "boards":[]}` 或是 `{"code":0, "boards":[{"id":0, "name":"糖尿病版"}]}`
+範例－`{"code":0, "boards":[]}` 或是 `{"code":0, "boards":[{"id":0, "name":"看版"}]}`
 
 
 #### 5 - Get Posts with Filters
@@ -185,7 +181,7 @@ None
 |keyword|String|若有，則只回傳包含該關鍵字的文章||
 |ts|Datatime String|格式為「YYYY-MM-DD HH:MM」，若有，則只回傳該時間點後的新文章||
 
-範例－`{"policy":1, "id_user":202, "ts":"2020-02-26 20:02"}` 或是 `{"policy":2, "keyword":"血友病童"}`
+範例－`{"policy":1, "id_user":202, "ts":"2020-02-26 20:02"}` 或是 `{"policy":2, "keyword":"關鍵字"}`
 
 
 ##### Returned Content
@@ -201,7 +197,7 @@ None
 |posts[index].url_avatar|String|文章縮圖網址|
 |posts[index].ts_create|Datetime String|文章發表日期，格式為「YYYY-MM-DD HH:MM」|
 
-範例－`{"code":0, "posts":[]}` 或是 `{"code":0, "posts":[{"id":4, "user_id":202, "id_board":5, "title":"沒錢付手術費", "content":"唉", "url_avatar":"https://post.png", "ts_create":"2020-02-26 21:00"}, {"id":8, ...}]}`
+範例－`{"code":0, "posts":[]}` 或是 `{"code":0, "posts":[{"id":4, "user_id":202, "id_board":5, "title":"標題", "content":"內文", "url_avatar":"https://post.png", "ts_create":"2020-02-26 21:00"}, {"id":8, ...}]}`
 
 
 #### 6 - Publish or Update a Post
@@ -221,7 +217,7 @@ None
 |content|String|文章內容|v|
 |url_avatar|String|文章縮圖網址|v|
 
-範例－`{"token":"mqspoq5fc", "id_user":202, "id_board":5, "title":"旁邊的病人好正", "content":"有卦嗎", "url_avatar":"https://beauty.png"}`
+範例－`{"token":"mqspoq5fc", "id_user":202, "id_board":5, "title":"新標題", "content":"新內文", "url_avatar":"https://beauty.png"}`
 
 
 ##### Returned Content
@@ -263,7 +259,7 @@ None
 |comments[i].content|String|該留言的內文|
 |comments[i].ts_create|Datetime String|該留言的發表日期，格式為「YYYY-MM-DD HH:MM」|
 
-範例－`{"code":0, "id_user":202, "id_board":5, "title":"沒錢付手術費", "content":"唉", "url_avatar":"https://post.png", "ts_create":"2020-02-26 21:00", "comments":[{"id":1034, "id_user":204, "content":"我也是", "ts_create":"2020-02-26 21:05"}]}`
+範例－`{"code":0, "id_user":202, "id_board":5, "title":"標題", "content":"內文", "url_avatar":"https://post.png", "ts_create":"2020-02-26 21:00", "comments":[{"id":1034, "id_user":204, "content":"回應", "ts_create":"2020-02-26 21:05"}]}`
 
 
 #### 8 - Publish or Update a Comment
@@ -275,13 +271,13 @@ None
 ##### Request Body
 |Key|Type|Description|Required|
 |:-:|:-:|:-:|:-:|
-|id|Integer|留言 ID，若有，且留言存在，則會更新該文章||
+|id|Integer|留言 ID，若有，且留言存在，則會更新該留言||
 |token|String|權限識別碼，用於識別使用者的身分|v|
 |id_user|Integer|欲留言者（即是自己）的使用者 ID|v|
 |id_post|Integer|欲留言回覆的文章 ID|v|
 |content|String|留言內容|v|
 
-範例－`{"token":"mqspoq5fk", "id_user":202, "id_post":4, "content":"好想當醫生賺大錢"}`
+範例－`{"token":"mqspoq5fk", "id_user":202, "id_post":4, "content":"新回應"}`
 
 
 ##### Returned Content
@@ -321,7 +317,7 @@ None
 |chatrooms[index].lastmsg_content|String|最後一則訊息的內容|
 |chatrooms[index].lastmsg_ts|Datetime String|最後一則訊息的時間，格式為「YYYY-MM-DD HH:MM」|
 
-範例－`{"code":0, "chatrooms":[{"id":67, "id_user_target":205, "name":"李承軒", "url_avatar":"http://handsome.jpg", "lastmsg_status":0, "lastmsg_content":"晚安", ,"lastmsg_ts":"2020-02-28 23:55"}]}`
+範例－`{"code":0, "chatrooms":[{"id":67, "id_user_target":205, "name":"聊天對象", "url_avatar":"http://handsome.jpg", "lastmsg_status":0, "lastmsg_content":"訊息", ,"lastmsg_ts":"2020-02-28 23:55"}]}`
 
 
 #### 10 - Update a Chatroom
@@ -339,7 +335,7 @@ None
 |name|String|若有，則更新聊天室的名字||
 |url_avatar|String|若有，則更新聊天室的縮圖網址||
 
-範例－`{"id":68, "token":"mqspoq5fc", "id_user":202, "name":"有錢承軒"}`
+範例－`{"id":68, "token":"mqspoq5fc", "id_user":202, "name":"聊天室名稱"}`
 
 
 ##### Returned Content
@@ -378,7 +374,7 @@ None
 |messages[index].content|String|訊息內容|
 |messages[index].ts_create|Datetime String|訊息時間，格式為「YYYY-MM-DD HH:MM」|
 
-範例－`{"code":0, "id_chatroom":69, "name":"漂亮的護士", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"一次多少", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"一萬可以嗎", "ts_create":"2020-03-01 22:20"}]}`
+範例－`{"code":0, "id_chatroom":69, "name":"聊天對象", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"訊息一", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"訊息二", "ts_create":"2020-03-01 22:20"}]}`
 
 
 #### 12 - Send Message
@@ -395,7 +391,7 @@ None
 |id_user_target|Integer|聊天對象的使用者 ID|v|
 |content|String|訊息內容|v|
 
-範例－`{"token":"mqspoq5fc", "id":202, "id_user_target":206, "content":"現金沒那麼多"}`
+範例－`{"token":"mqspoq5fc", "id":202, "id_user_target":206, "content":"新訊息"}`
 
 
 ##### Returned Content
@@ -410,5 +406,5 @@ None
 |messages[index].content|String|訊息內容|
 |messages[index].ts_create|Datetime String|訊息時間，格式為「YYYY-MM-DD HH:MM」|
 
-範例－`{"code":0, "id_chatroom":69, "name":"漂亮的護士", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"一次多少", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"一萬可以嗎", "ts_create":"2020-03-01 22:20"}, {"status":2, "content":"現金沒那麼多", "ts_create":"2020-03-01 22:25"}]}`
+範例－`{"code":0, "id_chatroom":69, "name":"聊天對象", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"訊息一", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"訊息二", "ts_create":"2020-03-01 22:20"}, {"status":2, "content":"新訊息", "ts_create":"2020-03-01 22:25"}]}`
 
