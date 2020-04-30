@@ -1,14 +1,59 @@
-## Project Social Light
-### Database
-#### Sqlite
-|Settings		|Value					|
-|:-:			|:-:					|
-|Filename		|sqlite3.db				|
-|Official Interface	|https://sqlitebrowser.org/dl/		|
-|Recommended Interface	|https://github.com/plotly/falcon	|
+## ⚡️ Social Light
+
+![ver](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![jre](https://img.shields.io/badge/JRE-8%2B-green.svg)
+![build](https://img.shields.io/badge/build-passing-brightgreen.svg)
+![coverage](https://img.shields.io/badge/code%20coverage-84%25-yellow.svg)
+![license](https://img.shields.io/badge/license-MIT-blueviolet.svg)
+
+A micro web service that hosts the minimum scale of a social network. 
 
 
-#### Tables
+### 🗯 Introduction
+The project provides a set of basic application programming interfaces (API) required and a simple dashboard for admin. By hosting this server and creating your own front end interface (e.g., mobile and webview), you are able to introduce and onboard your application.
+
+
+### 🏳️ Features
+1. Users are able to set up their personal properties including name, location and avatar.
+2. Users can publish a post to one of the boards defined by the admin.
+3. Comments on the posts are supported.
+4. Messaging system is ready and users are allowed to modify the name and avatar of the chatroom.
+
+
+### 🗳 Get Started
+|Step|Content|
+|:-:|:-|
+|#1|Install JRE 8+|
+|#2|Download zipped JAR and config files from [release](https://github.com/der3318/social-light/releases/download/1.0.0/social-light.zip)|
+|#3|`$ java -jar social-light.jar port.http=[PORT] admin.token=[TOKEN]` to start the server|
+|#4|Check `http://[IP]:[PORT]/admin?token=[TOKEN]` for the admin dashboard|
+|#5|Use [API](#application-programming-interface---about) under `http://[IP]:[PORT]/api/v1/...` to develop your own application|
+
+![Imgur](https://i.imgur.com/9KBtnA8.gif)
+
+
+### 📝 Frameworks and Libraries
+|Name|Description|Version|
+|:-:|:-:|:-:|
+|[Jooby](https://github.com/jooby-project/jooby)|modular web framework|2.6.1|
+|[Semanti UI](https://github.com/Semantic-Org/Semantic-UI)|UI framework designed for theming|2.4.1|
+|[JaCoCo](https://github.com/jacoco/jacoco)|code coverage library|0.8.5|
+|[Tabler Icons](https://github.com/tabler/tabler-icons)|high-quality svg icons|1.4.0|
+|[Falcon](https://github.com/plotly/falcon)|open-source SQL client for Windows and Mac|2.2|
+
+
+### Todo List
+* [x] Documentation for tables and API
+* [ ] How to build project
+* [ ] How to reset and migrate the database
+* [ ] How to run tests and reports
+* [ ] Interactive demo with a simple front end application
+
+
+### 🔎 Development
+<details>
+<summary>Table Schema - Sqlite3</summary>
+
 |Table          |Field          |Type           |Note                           |
 |:-:            |:-:            |:-:            |:-:                            |
 |users          |id             |INTEGER        |PRIMARY KEY                    |
@@ -53,15 +98,15 @@
 |               |content        |VARCHAR(255)   |                               |
 |               |ts_create      |DATETIME       |DEFAULT CURRENT_TIMESTAMP      |
 
+</details>
 
-### API
-#### 0 - About
+### Application Programming Interface - About
 |URL 前綴|版本|最後修改日期|
 |:-:|:-:|:-:|
 |[DOMAIN]/api/v1|Version 1|2020 April 19th|
 
-
-#### 1 - Login
+<details>
+<summary>1 - Login</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -86,7 +131,10 @@
 範例－`{"code":0, "token":"mqspoq4fc", "id":202}` 或是 `{"code":-1}`
 
 
-#### 2 - Get User Information
+</details>
+
+<details>
+<summary>2 - Get User Information</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -115,7 +163,10 @@
 範例－`{"code":0, "account":"temp", "name":"暱稱", ..., "url_avatar":"https://imgur/user.png"}`
 
 
-#### 3 - Update User Information
+</details>
+
+<details>
+<summary>3 - Update User Information</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -145,7 +196,10 @@
 範例－`{"code":-2}`
 
 
-#### 4 - Get List of Boards
+</details>
+
+<details>
+<summary>4 - Get List of Boards</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -166,7 +220,10 @@ None
 範例－`{"code":0, "boards":[]}` 或是 `{"code":0, "boards":[{"id":0, "name":"看版"}]}`
 
 
-#### 5 - Get Posts with Filters
+</details>
+
+<details>
+<summary>5 - Get Posts with Filters</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -200,7 +257,10 @@ None
 範例－`{"code":0, "posts":[]}` 或是 `{"code":0, "posts":[{"id":4, "user_id":202, "id_board":5, "title":"標題", "content":"內文", "url_avatar":"https://post.png", "ts_create":"2020-02-26 21:00"}, {"id":8, ...}]}`
 
 
-#### 6 - Publish or Update a Post
+</details>
+
+<details>
+<summary>6 - Publish or Update a Post</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -229,7 +289,10 @@ None
 範例－`{"code":-3}` 或是 `{"code":0, "id":9}`
 
 
-#### 7 - Get Post Information and Related Comments
+</details>
+
+<details>
+<summary>7 - Get Post Information and Related Comments</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -262,7 +325,10 @@ None
 範例－`{"code":0, "id_user":202, "id_board":5, "title":"標題", "content":"內文", "url_avatar":"https://post.png", "ts_create":"2020-02-26 21:00", "comments":[{"id":1034, "id_user":204, "content":"回應", "ts_create":"2020-02-26 21:05"}]}`
 
 
-#### 8 - Publish or Update a Comment
+</details>
+
+<details>
+<summary>8 - Publish or Update a Comment</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -289,7 +355,10 @@ None
 範例－`{"code":-4}` 或是 `{"code":0, "id":1039}`
 
 
-#### 9 - Get Chatrooms of a User
+</details>
+
+<details>
+<summary>9 - Get Chatrooms of a User</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -320,7 +389,10 @@ None
 範例－`{"code":0, "chatrooms":[{"id":67, "id_user_target":205, "name":"聊天對象", "url_avatar":"http://handsome.jpg", "lastmsg_status":0, "lastmsg_content":"訊息", ,"lastmsg_ts":"2020-02-28 23:55"}]}`
 
 
-#### 10 - Update a Chatroom
+</details>
+
+<details>
+<summary>10 - Update a Chatroom</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -346,7 +418,10 @@ None
 範例－`{"code":-1}`
 
 
-#### 11 - Get Messages Between Users
+</details>
+
+<details>
+<summary>11 - Get Messages Between Users</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -377,7 +452,10 @@ None
 範例－`{"code":0, "id_chatroom":69, "name":"聊天對象", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"訊息一", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"訊息二", "ts_create":"2020-03-01 22:20"}]}`
 
 
-#### 12 - Send Message
+</details>
+
+<details>
+<summary>12 - Send Message</summary>
 
 |Path|Protocol|Request Content Type|Response Content Type|Charset|
 |:-:|:-:|:-:|:-:|:-:|
@@ -408,3 +486,5 @@ None
 
 範例－`{"code":0, "id_chatroom":69, "name":"聊天對象", "url_avatar":"http://nurse.png", "messages":[{"status":2, "content":"訊息一", "ts_create":"2020-03-01 22:15"}, {"status":1, "content":"訊息二", "ts_create":"2020-03-01 22:20"}, {"status":2, "content":"新訊息", "ts_create":"2020-03-01 22:25"}]}`
 
+
+</details>

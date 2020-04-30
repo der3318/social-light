@@ -1,5 +1,7 @@
 package der3318;
 
+import com.typesafe.config.Config;
+
 import java.nio.charset.StandardCharsets;
 
 import io.jooby.ServerOptions;
@@ -23,9 +25,10 @@ public class App {
 
         runApp(args, app -> {
 
-            /* config and ports */
-            int port = 3319, securePort = 3320;
-            app.setServerOptions(ServerOptions.from(app.getConfig()).get().setPort(port).setSecurePort(securePort));
+            /* config */
+            Config config = app.getEnvironment().getConfig();
+            int port = config.getInt("port.http"), securePort = config.getInt("port.https");
+            app.setServerOptions(ServerOptions.from(config).get().setPort(port).setSecurePort(securePort));
 
             /* templates and assets */
             app.install(new PebbleModule("public/views"));

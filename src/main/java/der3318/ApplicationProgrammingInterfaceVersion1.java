@@ -687,10 +687,12 @@ public class ApplicationProgrammingInterfaceVersion1 extends Jooby {
                 String sql = "DELETE FROM posts WHERE id_board = :id_board";
                 h.createUpdate(sql).bind("id_board", id).execute();
             });
-            jdbi.useHandle(h -> {
-                String sql = "DELETE FROM comments WHERE id_post in (<id_post_list>)";
-                h.createUpdate(sql).bindList("id_post_list", records).execute();
-            });
+            if (records.size() > 0) {
+                jdbi.useHandle(h -> {
+                    String sql = "DELETE FROM comments WHERE id_post in (<id_post_list>)";
+                    h.createUpdate(sql).bindList("id_post_list", records).execute();
+                });
+            }
             return rsp.body();
         });
 

@@ -613,4 +613,167 @@ public class UnitTest {
         assertEquals(1, response3.size());
     }
 
+    @Test
+    public void adminOperateUsers() {
+        /* update */
+        MockContext context1 = new MockContext().setBody("{\"id\":1,\"account\":\"a1\",\"password\":\"p1\",\"name\":\"n\",\"type\":\"t\",\"location\":\"l\",\"motto\":\"m\",\"intro\":\"i\",\"url_avatar\":\"u\"}");
+        HashMap response1 = router.post("/admin/user/update", context1).value(HashMap.class);
+        assertEquals(0, response1.get("code"));
+        assertEquals(1, response1.get("id"));
+        /* check updated */
+        MockContext context2 = new MockContext().setBody("{\"search\":\"a1\"}");
+        HashMap response2 = router.post("/admin/users", context2).value(HashMap.class);
+        assertEquals(0, response2.get("code"));
+        assertEquals(1, response2.get("total"));
+        List<Map<String, Object>> userList = (List<Map<String, Object>>) response2.get("data");
+        assertEquals(1, userList.size());
+        assertEquals(1, userList.get(0).get("id"));
+        assertEquals("a1", userList.get(0).get("account"));
+        assertEquals("p1", userList.get(0).get("password"));
+        assertEquals("n", userList.get(0).get("name"));
+        assertEquals("t", userList.get(0).get("type"));
+        assertEquals("l", userList.get(0).get("location"));
+        assertEquals("m", userList.get(0).get("motto"));
+        assertEquals("i", userList.get(0).get("intro"));
+        assertEquals("u", userList.get(0).get("url_avatar"));
+        /* add */
+        MockContext context3 = new MockContext().setBody("{\"id\":-1,\"account\":\"a4\",\"password\":\"p4\",\"name\":\"n\",\"type\":\"t\",\"location\":\"l\",\"motto\":\"m\",\"intro\":\"i\",\"url_avatar\":\"u\"}");
+        HashMap response3 = router.post("/admin/user/update", context3).value(HashMap.class);
+        assertEquals(0, response3.get("code"));
+        assertEquals(4, response3.get("id"));
+        /* check added */
+        MockContext context4 = new MockContext().setBody("{\"search\":\"a4\"}");
+        HashMap response4 = router.post("/admin/users", context4).value(HashMap.class);
+        assertEquals(0, response4.get("code"));
+        assertEquals(1, response4.get("total"));
+        /* delete */
+        MockContext context5 = new MockContext().setBody("{\"id\":4}");
+        HashMap response5 = router.post("/admin/user/delete", context5).value(HashMap.class);
+        assertEquals(0, response5.get("code"));
+        /* check deleted */
+        MockContext context6 = new MockContext().setBody("{\"search\":\"a4\"}");
+        HashMap response6 = router.post("/admin/users", context6).value(HashMap.class);
+        assertEquals(0, response6.get("code"));
+        assertEquals(0, response6.get("total"));
+    }
+
+    @Test
+    public void adminOperateBoards() {
+        /* update */
+        MockContext context1 = new MockContext().setBody("{\"id\":1,\"name\":\"n1\"}");
+        HashMap response1 = router.post("/admin/board/update", context1).value(HashMap.class);
+        assertEquals(0, response1.get("code"));
+        assertEquals(1, response1.get("id"));
+        /* check updated */
+        MockContext context2 = new MockContext().setBody("{\"search\":\"n1\"}");
+        HashMap response2 = router.post("/admin/boards", context2).value(HashMap.class);
+        assertEquals(0, response2.get("code"));
+        assertEquals(1, response2.get("total"));
+        List<Map<String, Object>> boardList = (List<Map<String, Object>>) response2.get("data");
+        assertEquals(1, boardList.size());
+        assertEquals(1, boardList.get(0).get("id"));
+        assertEquals("n1", boardList.get(0).get("name"));
+        /* add */
+        MockContext context3 = new MockContext().setBody("{\"id\":-1,\"name\":\"n3\"}");
+        HashMap response3 = router.post("/admin/board/update", context3).value(HashMap.class);
+        assertEquals(0, response3.get("code"));
+        assertEquals(3, response3.get("id"));
+        /* check added */
+        MockContext context4 = new MockContext().setBody("{\"search\":\"n3\"}");
+        HashMap response4 = router.post("/admin/boards", context4).value(HashMap.class);
+        assertEquals(0, response4.get("code"));
+        assertEquals(1, response4.get("total"));
+        /* delete */
+        MockContext context5 = new MockContext().setBody("{\"id\":3}");
+        HashMap response5 = router.post("/admin/board/delete", context5).value(HashMap.class);
+        assertEquals(0, response5.get("code"));
+        /* check deleted */
+        MockContext context6 = new MockContext().setBody("{\"search\":\"n3\"}");
+        HashMap response6 = router.post("/admin/boards", context6).value(HashMap.class);
+        assertEquals(0, response6.get("code"));
+        assertEquals(0, response6.get("total"));
+    }
+
+    @Test
+    public void adminOperatePosts() {
+        /* update */
+        MockContext context1 = new MockContext().setBody("{\"id\":1,\"id_user\":1,\"id_board\":1,\"title\":\"t1\",\"content\":\"c\",\"url_avatar\":\"u\",\"ts_create\":\"2020-01-01 00:00\"}");
+        HashMap response1 = router.post("/admin/post/update", context1).value(HashMap.class);
+        assertEquals(0, response1.get("code"));
+        assertEquals(1, response1.get("id"));
+        /* check updated */
+        MockContext context2 = new MockContext().setBody("{\"search\":\"t1\"}");
+        HashMap response2 = router.post("/admin/posts", context2).value(HashMap.class);
+        assertEquals(0, response2.get("code"));
+        assertEquals(1, response2.get("total"));
+        List<Map<String, Object>> postList = (List<Map<String, Object>>) response2.get("data");
+        assertEquals(1, postList.size());
+        assertEquals(1, postList.get(0).get("id"));
+        assertEquals(1, postList.get(0).get("id_user"));
+        assertEquals(1, postList.get(0).get("id_board"));
+        assertEquals("t1", postList.get(0).get("title"));
+        assertEquals("c", postList.get(0).get("content"));
+        assertEquals("u", postList.get(0).get("url_avatar"));
+        assertEquals(0, ((String) postList.get(0).get("ts_create")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+        /* add */
+        MockContext context3 = new MockContext().setBody("{\"id\":-1,\"id_user\":1,\"id_board\":1,\"title\":\"t7\",\"content\":\"c\",\"url_avatar\":\"u\",\"ts_create\":\"2020-01-01 00:00\"}");
+        HashMap response3 = router.post("/admin/post/update", context3).value(HashMap.class);
+        assertEquals(0, response3.get("code"));
+        assertEquals(7, response3.get("id"));
+        /* check added */
+        MockContext context4 = new MockContext().setBody("{\"search\":\"t7\"}");
+        HashMap response4 = router.post("/admin/posts", context4).value(HashMap.class);
+        assertEquals(0, response4.get("code"));
+        assertEquals(1, response4.get("total"));
+        /* delete */
+        MockContext context5 = new MockContext().setBody("{\"id\":7}");
+        HashMap response5 = router.post("/admin/post/delete", context5).value(HashMap.class);
+        assertEquals(0, response5.get("code"));
+        /* check deleted */
+        MockContext context6 = new MockContext().setBody("{\"search\":\"t7\"}");
+        HashMap response6 = router.post("/admin/posts", context6).value(HashMap.class);
+        assertEquals(0, response6.get("code"));
+        assertEquals(0, response6.get("total"));
+    }
+
+    @Test
+    public void adminOperateComments() {
+        /* update */
+        MockContext context1 = new MockContext().setBody("{\"id\":1,\"id_user\":1,\"id_post\":1,\"content\":\"c1\",\"ts_create\":\"2020-01-01 00:00\"}");
+        HashMap response1 = router.post("/admin/comment/update", context1).value(HashMap.class);
+        assertEquals(0, response1.get("code"));
+        assertEquals(1, response1.get("id"));
+        /* check updated */
+        MockContext context2 = new MockContext().setBody("{\"search\":\"c1\"}");
+        HashMap response2 = router.post("/admin/comments", context2).value(HashMap.class);
+        assertEquals(0, response2.get("code"));
+        assertEquals(1, response2.get("total"));
+        List<Map<String, Object>> commentList = (List<Map<String, Object>>) response2.get("data");
+        assertEquals(1, commentList.size());
+        assertEquals(1, commentList.get(0).get("id"));
+        assertEquals(1, commentList.get(0).get("id_user"));
+        assertEquals(1, commentList.get(0).get("id_post"));
+        assertEquals("c1", commentList.get(0).get("content"));
+        assertEquals(0, ((String) commentList.get(0).get("ts_create")).replaceAll("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "").length());
+        /* add */
+        MockContext context3 = new MockContext().setBody("{\"id\":-1,\"id_user\":1,\"id_post\":1,\"content\":\"c10\",\"ts_create\":\"2020-01-01 00:00\"}");
+        HashMap response3 = router.post("/admin/comment/update", context3).value(HashMap.class);
+        assertEquals(0, response3.get("code"));
+        assertEquals(10, response3.get("id"));
+        /* check added */
+        MockContext context4 = new MockContext().setBody("{\"search\":\"c10\"}");
+        HashMap response4 = router.post("/admin/comments", context4).value(HashMap.class);
+        assertEquals(0, response4.get("code"));
+        assertEquals(1, response4.get("total"));
+        /* delete */
+        MockContext context5 = new MockContext().setBody("{\"id\":10}");
+        HashMap response5 = router.post("/admin/comment/delete", context5).value(HashMap.class);
+        assertEquals(0, response5.get("code"));
+        /* check deleted */
+        MockContext context6 = new MockContext().setBody("{\"search\":\"c10\"}");
+        HashMap response6 = router.post("/admin/comments", context6).value(HashMap.class);
+        assertEquals(0, response6.get("code"));
+        assertEquals(0, response6.get("total"));
+    }
+
 }
