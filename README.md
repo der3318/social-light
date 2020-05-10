@@ -36,17 +36,55 @@ The project provides a set of basic application programming interfaces (API) req
 |Name|Description|Version|
 |:-:|:-:|:-:|
 |[Jooby](https://github.com/jooby-project/jooby)|modular web framework|2.6.1|
-|[Semanti UI](https://github.com/Semantic-Org/Semantic-UI)|UI framework designed for theming|2.4.1|
+|[Semantic UI](https://github.com/Semantic-Org/Semantic-UI)|UI framework designed for theming|2.4.1|
 |[JaCoCo](https://github.com/jacoco/jacoco)|code coverage library|0.8.5|
 |[Tabler Icons](https://github.com/tabler/tabler-icons)|high-quality svg icons|1.4.0|
 |[Falcon](https://github.com/plotly/falcon)|open-source SQL client for Windows and Mac|2.2|
 
 
-### Todo List
+### 🛠 Build and Configuration
+|Step|Content|
+|:-:|:-|
+|#1|Clone the source from Github|
+|#2|Install and setup [Gradle](https://gradle.org/install/)|
+|#3|`$ gradlew.bat shadowJar` to build the fat JAR|
+|#4|Find the built JAR at `build/libs`|
+||Specify some server settings in `conf/application.conf`|
+||For https SSL, https://www.sslforfree.com/ is one of the solutions. Replace the dummy files in `conf/`|
+
+
+### 📈 Database
+`sqlite3.db` is the only database file for the project. Production and testing share the same environment. Feel free the drop the tables and reset the data with the SQL scripts.
+
+|Filename|Usage|
+|:-:|:-:|
+|[sql/CreateTables.sql](https://github.com/der3318/social-light/blob/master/sql/CreateTables.sql)|Create the required [tables](#%F0%9F%94%8E-development) for the application|
+|[sql/InitRecords.sql](https://github.com/der3318/social-light/blob/master/sql/InitRecords.sql)|Initialize and generate some test data for the application|
+
+![Imgur](https://i.imgur.com/qLjVNT2.png)
+
+
+### 📐 Tests and Reports
+|Step|Content|
+|:-:|:-|
+|#1|Clone the source from Github|
+|#2|Install and setup [Gradle](https://gradle.org/install/)|
+|#3|`$ gradlew.bat test` to run the tests|
+|#4|`$ gradlew.bat jacocoTestReport` to evaluate the coverage|
+|#5|Open `build/reports/tests/test/index.html` to view the test results|
+|#6|Open `build/reports/jacoco/test/html/index.html` to view the test coverage|
+
+Note that running the tests would **RESET** the database by default. Backup the sqlite db file (a.k.a., simply copy `sqlite3.db` and paste the file to another place) if the data is prefered to be kept.
+
+![Imgur](https://i.imgur.com/WYXekWR.png)
+
+
+### 💭 Todo List
 * [x] Documentation for tables and API
-* [ ] How to build project
-* [ ] How to reset and migrate the database
-* [ ] How to run tests and reports
+* [x] How to build project
+* [x] How to reset and migrate the database
+* [x] How to run tests and reports
+* [ ] Introdution of SSL setup for https connection
 * [ ] Interactive demo with a simple front end application
 
 
@@ -488,3 +526,4 @@ None
 
 
 </details>
+
