@@ -57,7 +57,7 @@ dependencies {
 
     /** database interface */
     compile "io.jooby:jooby-hikari:2.6.1"
-    compile "io.jooby:jooby-jdbi:2.6.1"
+    compile "io.jooby:jooby-jdbi:2.8.10"
 
     /** database dependency */
     compile "com.h2database:h2:1.3.148"
