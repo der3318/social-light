@@ -26,6 +26,9 @@ apply plugin: "application"
 apply plugin: "jooby"
 apply plugin: "jacoco"
 
+/** run gradlew install to export pom-default.xml under build/poms/ */
+apply plugin: "maven" 
+
 group "der3318"
 version "1.0.0"
 mainClassName = "der3318.App"
