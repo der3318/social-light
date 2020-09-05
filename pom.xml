@@ -7,6 +7,11 @@
   <dependencies>
     <dependency>
       <groupId>io.jooby</groupId>
+      <artifactId>jooby</artifactId>
+      <version>2.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jooby</groupId>
       <artifactId>jooby-pebble</artifactId>
       <version>2.6.1</version>
       <scope>compile</scope>
