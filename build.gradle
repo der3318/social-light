@@ -53,7 +53,7 @@ dependencyManagement {
 
 dependencies {
     /** template engine */
-    compile "io.jooby:jooby-pebble:2.6.1"
+    compile "io.jooby:jooby-pebble:2.9.0"
 
     /** database interface */
     compile "io.jooby:jooby-hikari:2.6.1"
