@@ -58,7 +58,7 @@ The project provides a set of basic application programming interfaces (API) req
 
 |Filename|Usage|
 |:-:|:-:|
-|[sql/CreateTables.sql](https://github.com/der3318/social-light/blob/master/sql/CreateTables.sql)|Create the required [tables](#%F0%9F%94%8E-development) for the application|
+|[sql/CreateTables.sql](https://github.com/der3318/social-light/blob/master/sql/CreateTables.sql)|Create the required [tables](#-development) for the application|
 |[sql/InitRecords.sql](https://github.com/der3318/social-light/blob/master/sql/InitRecords.sql)|Initialize and generate some test data for the application|
 
 ![Imgur](https://i.imgur.com/qLjVNT2.png)
@@ -74,7 +74,7 @@ The project provides a set of basic application programming interfaces (API) req
 |#5|Open `build/reports/tests/test/index.html` to view the test results|
 |#6|Open `build/reports/jacoco/test/html/index.html` to view the test coverage|
 
-Note that running the tests would **RESET** the database by default. Backup the sqlite db file (a.k.a., simply copy `sqlite3.db` and paste the file to another place) if the data is prefered to be kept.
+Note that running the tests would **RESET** the database by default. Backup the sqlite db file (a.k.a., simply copy `sqlite3.db` and paste the file to another place) if the data is preferred to be kept.
 
 ![Imgur](https://i.imgur.com/WYXekWR.png)
 
