@@ -56,7 +56,7 @@ dependencies {
     compile "io.jooby:jooby-pebble:2.6.1"
 
     /** database interface */
-    compile "io.jooby:jooby-hikari:2.6.1"
+    compile "io.jooby:jooby-hikari:2.9.1"
     compile "io.jooby:jooby-jdbi:2.6.1"
 
     /** database dependency */
