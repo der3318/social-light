@@ -1,6 +1,6 @@
 ## ⚡️ Social Light
 
-![ver](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![ver](https://img.shields.io/badge/version-1.0.1-blue.svg)
 ![jre](https://img.shields.io/badge/JRE-8%2B-green.svg)
 ![build](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![coverage](https://img.shields.io/badge/code%20coverage-84%25-yellow.svg)
@@ -24,7 +24,7 @@ The project provides a set of basic application programming interfaces (API) req
 |Step|Content|
 |:-:|:-|
 |#1|Install JRE 8+|
-|#2|Download zipped JAR and config files from [release](https://github.com/der3318/social-light/releases/download/1.0.0/social-light.zip)|
+|#2|Download zipped JAR and config files from [release](https://github.com/der3318/social-light/releases/download/1.0.1/social-light.zip)|
 |#3|`$ java -jar social-light.jar port.http=[PORT] admin.token=[TOKEN]` to start the server|
 |#4|Check `http://[IP]:[PORT]/admin?token=[TOKEN]` for the admin dashboard|
 |#5|Use [API](#application-programming-interface---about) under `http://[IP]:[PORT]/api/v1/...` to develop your own application|
