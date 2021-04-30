@@ -15,7 +15,7 @@ buildscript {
         classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
 
         classpath "io.jooby:jooby-gradle-plugin:$joobyVersion"
-        classpath "com.github.jengelman.gradle.plugins:shadow:5.1.0"
+        classpath "com.github.jengelman.gradle.plugins:shadow:6.1.0"
     }
 }
 
