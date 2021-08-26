@@ -61,7 +61,7 @@ dependencies {
 
     /** database dependency */
     compile "com.h2database:h2:1.4.200"
-    compile "org.xerial:sqlite-jdbc:3.8.11.2"
+    compile "org.xerial:sqlite-jdbc:3.36.0.2"
 
     /** json utility */
     compile "io.jooby:jooby-jackson:2.9.5"
