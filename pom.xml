@@ -3,29 +3,29 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>der3318</groupId>
   <artifactId>social-light</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <dependencies>
     <dependency>
       <groupId>io.jooby</groupId>
       <artifactId>jooby</artifactId>
-      <version>2.9.5</version>
+      <version>2.11.0</version>
     </dependency>
     <dependency>
       <groupId>io.jooby</groupId>
       <artifactId>jooby-pebble</artifactId>
-      <version>2.9.5</version>
+      <version>2.11.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.jooby</groupId>
       <artifactId>jooby-hikari</artifactId>
-      <version>2.9.5</version>
+      <version>2.11.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.jooby</groupId>
       <artifactId>jooby-jdbi</artifactId>
-      <version>2.9.5</version>
+      <version>2.11.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>io.jooby</groupId>
       <artifactId>jooby-jackson</artifactId>
-      <version>2.9.5</version>
+      <version>2.11.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -82,7 +82,7 @@
       <dependency>
         <groupId>io.jooby</groupId>
         <artifactId>jooby-bom</artifactId>
-        <version>2.9.5</version>
+        <version>2.11.0</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
