@@ -63,7 +63,7 @@ dependencies {
     compile "io.jooby:jooby-jdbi:2.11.0"
 
     /** database dependency */
-    compile "com.h2database:h2:1.4.200"
+    compile "com.h2database:h2:2.1.214"
     compile "org.xerial:sqlite-jdbc:3.36.0.3"
 
     /** json utility */
